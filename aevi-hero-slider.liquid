@@ -1,0 +1,696 @@
+{%- comment -%}
+  AEVI – Hero Slider
+  Place in /sections/aevi-hero-slider.liquid
+  Order: 1) Schema  2) HTML  3) Style  4) JS
+{%- endcomment -%}
+
+{% schema %}
+{
+  "name": "AEVI Hero Slider",
+  "tag": "section",
+  "class": "aevi-hero-section",
+  "max_blocks": 5,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Slideshow"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate slides",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "interval",
+      "label": "Seconds between slides",
+      "min": 3,
+      "max": 20,
+      "step": 1,
+      "unit": "s",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "label": "Desktop height",
+      "min": 400,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 617
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Mobile height",
+      "min": 300,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "default": 480
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Shade opacity (bottom-left)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "%",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading & link color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Pill button background",
+      "default": "#a3bedd"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_hover",
+      "label": "Pill button hover background",
+      "default": "#d5e0ea"
+    },
+    {
+      "type": "color",
+      "id": "btn_text",
+      "label": "Pill button text & border",
+      "default": "#1a1a1a"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Mobile image (optional)",
+          "info": "Shown on screens 768px and below. Falls back to the main image."
+        },
+        {
+          "type": "select",
+          "id": "mobile_focus",
+          "label": "Mobile image focus",
+          "options": [
+            { "value": "25% center", "label": "Left" },
+            { "value": "50% center", "label": "Center" },
+            { "value": "65% center", "label": "Right-ish" },
+            { "value": "85% center", "label": "Right" }
+          ],
+          "default": "65% center"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Clean, Gentle & Results-Driven"
+        },
+        {
+          "type": "header",
+          "content": "Button"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "Button style",
+          "options": [
+            { "value": "pill", "label": "Pill button" },
+            { "value": "link", "label": "Underlined link" }
+          ],
+          "default": "pill"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "AEVI Hero Slider",
+      "blocks": [
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "slide" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+{%- comment -%} ───────────────  HTML  ─────────────── {%- endcomment -%}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+<div
+  class="aevi-hero"
+  id="AeviHero-{{ section.id }}"
+  data-autoplay="{{ section.settings.autoplay }}"
+  data-interval="{{ section.settings.interval }}"
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="Featured"
+>
+  <div class="aevi-hero__viewport">
+    <div class="aevi-hero__track">
+      {%- for block in section.blocks -%}
+        <div
+          class="aevi-hero__slide"
+          role="group"
+          aria-roledescription="slide"
+          aria-label="{{ forloop.index }} of {{ forloop.length }}"
+          data-slide
+          {{ block.shopify_attributes }}
+        >
+          {%- if block.settings.image != blank -%}
+            <picture>
+              {%- if block.settings.image_mobile != blank -%}
+                <source
+                  media="(max-width: 768px)"
+                  srcset="{{ block.settings.image_mobile | image_url: width: 600 }} 600w,
+                          {{ block.settings.image_mobile | image_url: width: 900 }} 900w"
+                  sizes="100vw"
+                >
+              {%- endif -%}
+              {{
+                block.settings.image
+                | image_url: width: 2000
+                | image_tag:
+                  class: 'aevi-hero__bg',
+                  widths: '800, 1200, 1600, 2000',
+                  sizes: '(min-width: 1440px) 1440px, 100vw',
+                  loading: forloop.first | ternary: 'eager', 'lazy',
+                  fetchpriority: forloop.first | ternary: 'high', 'auto',
+                  draggable: 'false',
+                  style: '--mobile-focus: ' | append: block.settings.mobile_focus
+              }}
+            </picture>
+          {%- else -%}
+            {{ 'hero-apparel-1' | placeholder_svg_tag: 'aevi-hero__bg aevi-hero__placeholder' }}
+          {%- endif -%}
+
+          <div class="aevi-hero__overlay"></div>
+
+          <div class="aevi-hero__content">
+            {%- if block.settings.heading != blank -%}
+              <h2 class="aevi-hero__headline">{{ block.settings.heading | escape }}</h2>
+            {%- endif -%}
+
+            {%- if block.settings.button_label != blank -%}
+              <a
+                href="{{ block.settings.button_link | default: '#' }}"
+                class="aevi-hero__btn aevi-hero__btn--{{ block.settings.button_style }}"
+                draggable="false"
+              >
+                {{- block.settings.button_label | escape -}}
+              </a>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+
+  {%- if section.blocks.size > 1 -%}
+    <div class="aevi-hero__dots" role="tablist" aria-label="Choose slide">
+      {%- for block in section.blocks -%}
+        <button
+          type="button"
+          class="aevi-hero__dot{% if forloop.first %} is-active{% endif %}"
+          role="tab"
+          aria-label="Go to slide {{ forloop.index }}"
+          aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+          data-dot="{{ forloop.index0 }}"
+        ><span></span></button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{%- comment -%} ───────────────  STYLE  ─────────────── {%- endcomment -%}
+
+{% style %}
+  #AeviHero-{{ section.id }} {
+    --hero-h: {{ section.settings.height_desktop }}px;
+    --hero-h-mobile: {{ section.settings.height_mobile }}px;
+    --hero-text: {{ section.settings.text_color }};
+    --btn-bg: {{ section.settings.btn_bg }};
+    --btn-bg-hover: {{ section.settings.btn_bg_hover }};
+    --btn-text: {{ section.settings.btn_text }};
+    --overlay: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+  }
+{% endstyle %}
+
+<style>
+  .aevi-hero {
+    position: relative;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .aevi-hero *,
+  .aevi-hero *::before,
+  .aevi-hero *::after {
+    box-sizing: border-box;
+  }
+
+  .aevi-hero__viewport {
+    overflow: hidden;
+    width: 100%;
+    height: var(--hero-h);
+    touch-action: pan-y;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .aevi-hero__viewport.is-dragging {
+    cursor: grabbing;
+  }
+
+  .aevi-hero__track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: transform;
+  }
+
+  .aevi-hero__track.is-dragging {
+    transition: none;
+  }
+
+  .aevi-hero__slide {
+    position: relative;
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .aevi-hero__slide picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .aevi-hero__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+    pointer-events: none;
+  }
+
+  .aevi-hero__placeholder {
+    background: #e8e8e5;
+  }
+
+  .aevi-hero__overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      to top right,
+      rgba(0, 0, 0, var(--overlay)) 0%,
+      rgba(0, 0, 0, 0) 55%
+    );
+  }
+
+  /* ── Content (bottom left) ── */
+  .aevi-hero__content {
+    position: absolute;
+    left: 32px;
+    bottom: 48px;
+    z-index: 2;
+    max-width: 700px;
+  }
+
+  .aevi-hero__headline {
+    font-weight: 300;
+    font-size: 48px;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--hero-text);
+    margin: 0 0 28px;
+  }
+
+  /* ── Buttons ── */
+  .aevi-hero__btn {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .aevi-hero__btn--pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 40px;
+    border: 1px solid var(--btn-text);
+    border-radius: 999px;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+
+  .aevi-hero__btn--pill:hover {
+    background: var(--btn-bg-hover);
+  }
+
+  .aevi-hero__btn--link {
+    display: inline-block;
+    padding: 4px 0;
+    color: var(--hero-text);
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 1px;
+    transition: opacity 0.25s ease;
+  }
+
+  .aevi-hero__btn--link:hover {
+    opacity: 0.7;
+  }
+
+  .aevi-hero__btn:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+  }
+
+  /* ── Slide indicator (bottom right) ── */
+  .aevi-hero__dots {
+    position: absolute;
+    right: 32px;
+    bottom: 48px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    touch-action: none; /* lets the bar be scrubbed by finger */
+  }
+
+  .aevi-hero__dot {
+    appearance: none;
+    background: none;
+    border: 0;
+    margin: 0;
+    padding: 10px 2px; /* larger touch target, visual gap = 4px */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .aevi-hero__dot span {
+    display: block;
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.7);
+    transition: width 0.3s ease, background 0.3s ease;
+  }
+
+  .aevi-hero__dot.is-active span {
+    width: 18px;
+    background: #ffffff;
+  }
+
+  .aevi-hero__dot:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 0;
+    border-radius: 6px;
+  }
+
+  /* ── Tablet ── */
+  @media (max-width: 1024px) {
+    .aevi-hero__headline { font-size: 40px; }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 768px) {
+    .aevi-hero__viewport { height: var(--hero-h-mobile); }
+
+    .aevi-hero__bg { object-position: var(--mobile-focus, 65% center); }
+
+    .aevi-hero__content {
+      left: 16px;
+      right: 16px;
+      bottom: 24px;
+      max-width: 100%;
+    }
+
+    .aevi-hero__headline {
+      font-size: 30px;
+      margin-bottom: 20px;
+    }
+
+    .aevi-hero__btn--pill { width: 180px; }
+
+    .aevi-hero__dots {
+      right: 14px;
+      bottom: 10px;
+    }
+  }
+
+  /* ── Small mobile ── */
+  @media (max-width: 480px) {
+    .aevi-hero__content {
+      left: 20px;
+      right: 20px;
+      bottom: 44px;
+    }
+
+    .aevi-hero__headline { font-size: 26px; }
+
+    .aevi-hero__dots {
+      right: 10px;
+      bottom: 8px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aevi-hero__track { transition: none; }
+  }
+</style>
+
+{%- comment -%} ───────────────  JS  ─────────────── {%- endcomment -%}
+
+<script>
+  (function () {
+    var root = document.getElementById('AeviHero-{{ section.id }}');
+    if (!root) return;
+
+    var viewport = root.querySelector('.aevi-hero__viewport');
+    var track = root.querySelector('.aevi-hero__track');
+    var slides = root.querySelectorAll('[data-slide]');
+    var dotsWrap = root.querySelector('.aevi-hero__dots');
+    var dots = root.querySelectorAll('[data-dot]');
+    var count = slides.length;
+    if (!count) return;
+
+    var autoplay = root.dataset.autoplay === 'true' && count > 1;
+    var delay = (parseInt(root.dataset.interval, 10) || 8) * 1000;
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var index = 0;
+    var timer = null;
+    var paused = false;
+
+    /* ── Core ── */
+    function render() {
+      track.style.transform = 'translateX(' + (-index * 100) + '%)';
+      slides.forEach(function (s, i) {
+        s.setAttribute('aria-hidden', i === index ? 'false' : 'true');
+        s.querySelectorAll('a').forEach(function (a) {
+          a.tabIndex = i === index ? 0 : -1;
+        });
+      });
+      dots.forEach(function (d, i) {
+        var on = i === index;
+        d.classList.toggle('is-active', on);
+        d.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+    }
+
+    function goTo(i) {
+      index = (i + count) % count;
+      render();
+    }
+
+    /* ── Autoplay ── */
+    function stop() {
+      clearInterval(timer);
+      timer = null;
+    }
+
+    function start() {
+      stop();
+      if (!autoplay || paused || reduceMotion) return;
+      timer = setInterval(function () { goTo(index + 1); }, delay);
+    }
+
+    /* ── Swipe / drag ── */
+    var startX = 0, startY = 0, dx = 0, dragging = false, locked = false, moved = false;
+
+    function onDown(e) {
+      if (count < 2) return;
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      dragging = true;
+      locked = false;
+      moved = false;
+      startX = e.clientX;
+      startY = e.clientY;
+      dx = 0;
+      stop();
+    }
+
+    function onMove(e) {
+      if (!dragging) return;
+      dx = e.clientX - startX;
+      var dy = e.clientY - startY;
+
+      if (!locked && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
+        locked = true;
+        track.classList.add('is-dragging');
+        viewport.classList.add('is-dragging');
+      }
+      if (!locked) return;
+
+      moved = true;
+      var w = viewport.offsetWidth;
+      var pct = (-index * 100) + (dx / w) * 100;
+      track.style.transform = 'translateX(' + pct + '%)';
+    }
+
+    function onUp() {
+      if (!dragging) return;
+      dragging = false;
+      track.classList.remove('is-dragging');
+      viewport.classList.remove('is-dragging');
+
+      if (locked) {
+        var threshold = viewport.offsetWidth * 0.15;
+        if (dx < -threshold) index = index + 1;
+        else if (dx > threshold) index = index - 1;
+        goTo(index);
+      }
+      start();
+    }
+
+    viewport.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+
+    // Don't follow the button link if the user was swiping
+    viewport.addEventListener('click', function (e) {
+      if (moved) {
+        e.preventDefault();
+        e.stopPropagation();
+        moved = false;
+      }
+    }, true);
+
+    /* ── Slide bar: tap or scrub with finger ── */
+    if (dotsWrap) {
+      var scrubbing = false;
+
+      function dotFromPoint(x, y) {
+        var el = document.elementFromPoint(x, y);
+        return el && el.closest ? el.closest('[data-dot]') : null;
+      }
+
+      dotsWrap.addEventListener('pointerdown', function (e) {
+        scrubbing = true;
+        stop();
+        var d = dotFromPoint(e.clientX, e.clientY);
+        if (d) goTo(parseInt(d.dataset.dot, 10));
+      });
+
+      dotsWrap.addEventListener('pointermove', function (e) {
+        if (!scrubbing) return;
+        var d = dotFromPoint(e.clientX, e.clientY);
+        if (d) {
+          var i = parseInt(d.dataset.dot, 10);
+          if (i !== index) goTo(i);
+        }
+      });
+
+      window.addEventListener('pointerup', function () {
+        if (scrubbing) {
+          scrubbing = false;
+          start();
+        }
+      });
+
+      // keyboard support
+      dotsWrap.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight') { goTo(index + 1); dots[index].focus(); }
+        if (e.key === 'ArrowLeft') { goTo(index - 1); dots[index].focus(); }
+      });
+    }
+
+    /* ── Pause on hover / focus / hidden tab ── */
+    root.addEventListener('mouseenter', function () { paused = true; stop(); });
+    root.addEventListener('mouseleave', function () { paused = false; start(); });
+    root.addEventListener('focusin', function () { paused = true; stop(); });
+    root.addEventListener('focusout', function () { paused = false; start(); });
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stop(); else start();
+    });
+
+    /* ── Theme editor support ── */
+    root.addEventListener('shopify:block:select', function (e) {
+      var i = Array.prototype.indexOf.call(slides, e.target);
+      if (i > -1) { paused = true; stop(); goTo(i); }
+    });
+    root.addEventListener('shopify:block:deselect', function () {
+      paused = false; start();
+    });
+
+    /* ── Init ── */
+    render();
+    start();
+  })();
+</script>
