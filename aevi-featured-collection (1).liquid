@@ -1,0 +1,502 @@
+{% comment %}
+  Featured Collection (Aevi style)
+  Uses: snippets/aevi-card-product.liquid + assets/aevi-component-card.css + assets/featured-collection-slider.js
+{% endcomment %}
+
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'aevi-component-card.css' | asset_url | stylesheet_tag }}
+
+<script src="{{ 'featured-collection-slider.js' | asset_url }}" defer="defer"></script>
+
+{% unless section.settings.quick_add == 'none' %}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+{% endunless %}
+
+{%- liquid
+  assign products_to_display = section.settings.collection.all_products_count
+
+  if section.settings.collection.all_products_count > section.settings.products_to_show
+    assign products_to_display = section.settings.products_to_show
+    assign more_in_collection = true
+  endif
+-%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient featured-collection featured-collection-{{ section.id }}
+  {% if section.settings.full_width %}featured-collection--full-width{% else %}page-width{% endif %}">
+
+  <div class="featured-collection__heading">
+    <h2 class="inline-richtext {{ section.settings.heading_size }}
+      {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+      {{ section.settings.heading }}
+    </h2>
+
+    {% if section.settings.show_description %}
+      <div class="featured-collection__description {{ section.settings.description_style }}
+        {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+        {{ section.settings.collection.description }}
+      </div>
+    {% elsif section.settings.description != blank %}
+      <div class="featured-collection__description {{ section.settings.description_style }}">
+        {{ section.settings.description }}
+      </div>
+    {% endif %}
+  </div>
+
+  <featured-slider>
+    <ul
+      class="featured-collection__grid
+        {% if section.settings.swipe_on_mobile %} featured-collection__grid--swipe{% endif %}
+        {% if section.settings.enable_desktop_slider %} featured-collection__grid--slider-desktop{% endif %}"
+      style="
+        --columns-desktop: {{ section.settings.columns_desktop }};
+        --columns-mobile: {{ section.settings.columns_mobile }};
+      "
+    >
+      {% if section.settings.collection.products.size > 0 %}
+
+        {% for product in section.settings.collection.products limit: section.settings.products_to_show %}
+          <li
+            class="featured-collection__item
+              {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+            {% if settings.animations_reveal_on_scroll %}
+              data-cascade
+              style="--animation-order: {{ forloop.index }};"
+            {% endif %}
+          >
+            {% render 'aevi-card-product',
+              card_product: product,
+              media_aspect_ratio: section.settings.image_ratio,
+              image_shape: section.settings.image_shape,
+              show_vendor: section.settings.show_vendor,
+              show_rating: section.settings.show_rating,
+              show_secondary_image: section.settings.show_secondary_image,
+              quick_add: section.settings.quick_add,
+              section_id: section.id
+            %}
+          </li>
+        {% endfor %}
+
+      {% else %}
+
+        {% comment %}
+          No collection picked (or it is empty): show placeholder cards, one per desktop column.
+        {% endcomment %}
+        {% for i in (1..section.settings.columns_desktop) %}
+          <li class="featured-collection__item">
+            {% render 'aevi-card-product',
+              media_aspect_ratio: section.settings.image_ratio,
+              image_shape: section.settings.image_shape,
+              placeholder_image: 'product-apparel-1'
+            %}
+          </li>
+        {% endfor %}
+
+      {% endif %}
+    </ul>
+
+    {% comment %} Slider buttons and counter {% endcomment %}
+    {% if section.settings.enable_desktop_slider %}
+      <div class="featured-collection__slider-buttons
+        {% unless section.settings.show_slider_buttons %} featured-collection__slider-buttons--no-arrows{% endunless %}
+        {% unless section.settings.show_slider_counter %} featured-collection__slider-buttons--no-counter{% endunless %}">
+        <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--prev" aria-label="Previous">
+          &larr;
+        </button>
+
+        <div class="featured-collection__slider-counter">
+          <span class="featured-collection__counter-current">1</span>
+          <span> / </span>
+          <span class="featured-collection__counter-total">{{ products_to_display }}</span>
+        </div>
+
+        <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--next" aria-label="Next">
+          &rarr;
+        </button>
+      </div>
+    {% endif %}
+  </featured-slider>
+
+  {% if section.settings.show_view_all_button and more_in_collection %}
+    <div class="featured-collection__view-all
+      {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+      <a
+        href="{{ section.settings.collection.url }}"
+        class="featured-collection__view-all-btn featured-collection__view-all-btn--{{ section.settings.view_all_style }}"
+      >
+        View all
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  /* section.id is unique per section instance, so two copies of this section can have different padding */
+  .featured-collection-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  .featured-collection--full-width {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .featured-collection__heading {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 40px;
+  }
+
+  .featured-collection__description {
+    font-size: 16px;
+    margin-top: 10px;
+  }
+
+  .featured-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns-mobile), 1fr);
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .featured-collection__item {
+    min-width: 0;
+  }
+
+  /* MOBILE ONLY: swipe layout.
+     Scoped to max-width so it can never leak onto desktop and squash the columns. */
+  @media screen and (max-width: 767px) {
+    .featured-collection__grid--swipe {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: calc((100% - (var(--columns-mobile) - 1) * 20px) / var(--columns-mobile));
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+    }
+
+    .featured-collection__grid--swipe .featured-collection__item {
+      scroll-snap-align: start;
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    .featured-collection__grid {
+      grid-template-columns: repeat(var(--columns-desktop), 1fr);
+    }
+
+    /* DESKTOP ONLY: slider layout */
+    .featured-collection__grid--slider-desktop {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: calc((100% - (var(--columns-desktop) - 1) * 20px) / var(--columns-desktop));
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 10px;
+    }
+
+    .featured-collection__grid--slider-desktop .featured-collection__item {
+      scroll-snap-align: start;
+    }
+  }
+
+  .featured-collection__view-all {
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  .featured-collection__view-all-btn--link {
+    text-decoration: underline;
+  }
+
+  .featured-collection__view-all-btn--outline {
+    display: inline-block;
+    padding: 10px 24px;
+    border: 1px solid black;
+  }
+
+  .featured-collection__view-all-btn--solid {
+    display: inline-block;
+    padding: 10px 24px;
+    background: black;
+    color: white;
+  }
+
+  .featured-collection__slider-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .featured-collection__slider-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+    background: white;
+    cursor: pointer;
+  }
+
+  /* hide arrows and/or counter from section settings (kept in the DOM so the slider JS still works) */
+  .featured-collection__slider-buttons--no-arrows .featured-collection__slider-btn {
+    display: none;
+  }
+
+  .featured-collection__slider-buttons--no-counter .featured-collection__slider-counter {
+    display: none;
+  }
+
+  .featured-collection__slider-buttons--no-arrows.featured-collection__slider-buttons--no-counter {
+    display: none;
+  }
+
+  /* counter number styling */
+  .featured-collection__slider-counter {
+    min-width: 50px;
+    text-align: center;
+  }
+
+  /* custom scroll bar */
+  .featured-collection__grid--slider-desktop::-webkit-scrollbar,
+  .featured-collection__grid--swipe::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .featured-collection__grid--slider-desktop::-webkit-scrollbar-track,
+  .featured-collection__grid--swipe::-webkit-scrollbar-track {
+    background: #eeeeee;
+    border-radius: 10px;
+  }
+
+  .featured-collection__grid--slider-desktop::-webkit-scrollbar-thumb,
+  .featured-collection__grid--swipe::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 10px;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Featured Collection",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured Collection"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show collection's own description instead",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h2", "label": "Medium" },
+        { "value": "h1", "label": "Large" },
+        { "value": "h0", "label": "Extra large" }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "select",
+      "id": "description_style",
+      "label": "Description style",
+      "options": [
+        { "value": "body", "label": "Body" },
+        { "value": "subtitle", "label": "Subtitle" },
+        { "value": "uppercase", "label": "Uppercase" }
+      ],
+      "default": "body"
+    },
+    {
+      "type": "header",
+      "content": "Collection settings"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all_button",
+      "label": "Show view all button",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "view_all_style",
+      "label": "View all button style",
+      "options": [
+        { "value": "link", "label": "Link" },
+        { "value": "outline", "label": "Outline button" },
+        { "value": "solid", "label": "Solid button" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "header",
+      "content": "Image settings"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns desktop",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_desktop_slider",
+      "label": "Enable slider on desktop",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_slider_buttons",
+      "label": "Show slider arrow buttons",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_slider_counter",
+      "label": "Show slider counter (1 / 4)",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "label": "Image shape",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "round", "label": "Round" },
+        { "value": "blob", "label": "Blob" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show rating",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "label": "Show second image on hover",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Make section full width",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "1 column" },
+        { "value": "2", "label": "2 columns" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "checkbox",
+      "id": "swipe_on_mobile",
+      "label": "Enable swipe on mobile",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "quick_add",
+      "label": "Quick add button",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "standard", "label": "Standard" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collection prt"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,289 @@
+/* ══════════════════════════════════════════════════════════════
+   AEVI-STYLE PRODUCT CARD  —  paste at the very END of component-card.css
+   (no CSS variables, plain values)
+══════════════════════════════════════════════════════════════ */
+
+/* ── Row 1: two stacked columns ──
+   left  = title over subtitle
+   right = price over compare-at price */
+.card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.card__top .card__heading {
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.card__subtitle {
+  display: block;
+  font-size: 14px;
+  line-height: 1.3;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.card__price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex: 0 0 auto;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.card__price-now {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: #1a1a1a;
+}
+
+.card__price-now--sale {
+  color: #1a1a1a;
+}
+
+.card__price-compare {
+  font-size: 13px;
+  line-height: 1.2;
+  color: rgba(0, 0, 0, 0.55);
+  text-decoration: line-through;
+}
+
+/* ── Top-left label + top-right award badge ── */
+.card__label {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+  padding: 6px 10px;
+  background: #dbe6f5;
+  color: #2b4dbf;
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.card__award {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  width: 95px;
+  height: 95px;
+  object-fit: contain;
+}
+
+/* ── Make the overlay clickable while the image still opens the product ──
+   The stretched link (.card__heading a::after, z-index 1) covers the card.
+   card__inner sits above it but ignores the mouse, so clicks on the image
+   fall through to the link, and only the panel catches clicks. */
+.card--quick-hover .card__inner {
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* ── The hover panel ── */
+.card--quick-hover .card__inner .quick-add--hover {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
+  pointer-events: auto;
+  transform: translateY(100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+              opacity 0.3s ease,
+              visibility 0s linear 0.4s;
+}
+
+@media (hover: hover) {
+  .card-wrapper:hover .card__inner .quick-add--hover,
+  .card-wrapper:focus-within .card__inner .quick-add--hover {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+}
+
+/* The white background belongs to the PANEL, so it always shows:
+   options + button, size select + button, or button only. */
+.quick-add__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.quick-add__panel .form,
+.quick-add__panel product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.quick-add__purchase {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quick-add__radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+.quick-add__radio input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #1a1a1a;
+  cursor: pointer;
+}
+
+.quick-add__variant {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.quick-add__select {
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 0;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-size: 14px;
+}
+
+.quick-add__plan {
+  width: calc(100% - 26px);
+  margin-left: 26px;
+}
+
+.quick-add__plan:disabled {
+  opacity: 0.45;
+}
+
+/* ── Add to bag button: light-blue pill ── */
+.quick-add--hover .quick-add__submit {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 20px;
+  border: 1px solid #1a1a1a;
+  border-radius: 999px;
+  background: #a3bedd;
+  color: #1a1a1a;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  box-shadow: none;
+  transition: background 0.25s ease;
+}
+
+.quick-add--hover .quick-add__submit::before,
+.quick-add--hover .quick-add__submit::after {
+  display: none;
+}
+
+.quick-add--hover .quick-add__submit:hover {
+  background: #8fb0d6;
+}
+
+.quick-add--hover .quick-add__submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Touch devices (no hover): panel stays visible, button only ── */
+@media (hover: none) {
+  .card--quick-hover .card__inner .quick-add--hover {
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .quick-add__purchase {
+    display: none;
+  }
+
+  .quick-add__panel {
+    padding: 10px;
+    background: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card--quick-hover .card__inner .quick-add--hover {
+    transition: none;
+  }
+}
+
+/* ── Mobile sizes ── */
+@media screen and (max-width: 749px) {
+  .card__top .card__heading,
+  .card__price-now,
+  .card__subtitle {
+    font-size: 13px;
+  }
+
+  .card__price-compare {
+    font-size: 12px;
+  }
+
+  .card__award {
+    width: 60px;
+    height: 60px;
+  }
+
+  .card__label {
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+}
+
+/* ── No underline on the product title when hovering the card ── */
+.product-card-wrapper.underline-links-hover:hover a,
+.product-card-wrapper .card__heading a:hover,
+.product-card-wrapper .card__heading a:focus {
+  text-decoration: none;
+}
