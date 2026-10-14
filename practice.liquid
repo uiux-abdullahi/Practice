@@ -1,0 +1,6754 @@
+{% comment %}
+I am trying to create a section template on shopify
+it will have:
+
+An Image picker
+An Image position dropdown or switch: Left / Right
+The image will actually move left or right when you change the setting.
+{% endcomment %}
+
+
+{% schema %}
+{"name" : "image position test",
+    "settings": [
+        { "type": "image_picker",
+            "id" : "image",
+            "label" : "image",
+        },
+
+        { "type" : "select",
+            "id" : "image_position",
+            "label" : "image position",
+            "options": [
+
+                {"value" : "left",
+                 "label" : "left",
+                },
+
+                {"value" : "right",
+                    "label" : "right",
+                }
+                
+            ],
+
+            "default" : "left",
+
+        }
+    ],
+
+    "presets" : [
+
+        { "name" : "image position test"
+        
+        }
+    ]
+}
+
+{% endschema %}
+
+
+
+
+<div class="image-block image-block--{{ section.settings.image_position }}">
+
+{% if section.settings.image != blank  %}
+{{ section.settings.image | image_url: width:400 | image_tag }}
+{% else %}
+<p>please select an image</p>
+{% endif%}
+
+</div>
+
+<style>
+
+  .image-block {
+    display: flex;
+    width: 100%;
+  }
+
+  .image-block--right {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+   .image-block--left {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .image-block img {
+    max-width: 500px;
+    width: 100%;
+    height: auto;
+
+  }
+
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+Practice 2
+We want to create a section 
+it will have:
+1 image picker dropdown i.e image left and video right
+1 image picker dropdown i.e image left and video right
+a Section link
+
+
+
+{% schema %}
+{"name":" Hero",
+    "settings" : [
+        {"type" : "image_picker",
+            "id" : "image_1",
+            "label" :"image_1",
+        
+        },
+
+        {"type" : "video",
+            "id" : "video_1",
+            "label" : "video_1",
+        },
+
+        {"type" : "image_picker",
+            "id" : "image_2",
+            "label" :"image_2",
+        
+        },
+
+         {"type" : "video",
+            "id" : "video_2",
+            "label" : "video_2",
+        },
+
+         {"type" : "url",
+            "id" : "link",
+            "label" : "link",
+        },
+
+
+
+
+
+
+    ],
+
+    "presets" : [
+        { "name" : "Hero"
+        }
+    ]
+
+
+}
+
+
+{% endschema %}
+
+
+<div class="Hero">
+    <div class="Hero-block">
+        {%if section.settings.image_1 != blank%}
+        {{section.settings.image_1 | image_url: width: 400  | image_tag}}
+        {%elsif section.settings.video_1 != blank%}
+        {{section.settings.video_1 |  video_tag: controls:true, autoplay:true, loop:true}}
+        {{else}}
+        <p>Please add your image or vide</p>
+
+        {% endif %}
+    
+    
+    </div>
+    
+    
+    <div class="Hero-block">
+        {%if section.settings.image_2 != blank%}
+        {{section.settings.image_2 | image_url: width: 400  | image_tag}}
+        {%elsif section.settings.video_2 != blank%}
+        {{section.settings.video_2 |  video_tag: controls:true, autoplay:true, loop:true}}
+        {{else}}
+        <p>Please add your image or vide</p>
+
+        {% endif %}
+    
+    
+    </div>
+    {%if section.settings.link != blank%}
+    <a href="{{section.settings.link}}"></a>
+ {% endif %}
+
+    
+</div>
+
+
+<style>
+
+    .Hero {
+        display: flex;
+        height: 512px;
+        width: 100%;
+    }
+
+    .Hero-block {
+
+        display: flex;
+        height: 100%;
+        width: 50%;
+    }
+
+    .Hero-block img, .Hero-block video {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+
+    }
+
+    .Hero a {
+        text-decoration: none;
+    }
+
+</style>
+
+
+
+
+
+
+
+
+Practice 2 update if we make the video and image a toggle switch
+{% comment %}
+  Hero section
+  - Media: image or video
+  - Media 2: image or video
+  - Section link
+{% endcomment %}
+
+
+{% schema %}
+{
+  "name": "Hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "select",
+      "id": "media_1_type",
+      "label": "Type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image",
+      "visible_if": "{{ section.settings.media_1_type == 'image' }}"
+    },
+    {
+      "type": "video",
+      "id": "video_1",
+      "label": "Video",
+      "visible_if": "{{ section.settings.media_1_type == 'video' }}"
+    },
+
+    {
+      "type": "header",
+      "content": "Media 2"
+    },
+    {
+      "type": "select",
+      "id": "media_2_type",
+      "label": "Type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Image",
+      "visible_if": "{{ section.settings.media_2_type == 'image' }}"
+    },
+    {
+      "type": "video",
+      "id": "video_2",
+      "label": "Video",
+      "visible_if": "{{ section.settings.media_2_type == 'video' }}"
+    },
+
+    {
+      "type": "header",
+      "content": "Section link"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "Open link in new tab",
+      "default": false
+    }
+  ],
+  "presets": [
+    { "name": "Hero" }
+  ]
+}
+{% endschema %}
+
+
+
+
+{% assign link_url = section.settings.link %}
+
+{% if link_url != blank %}
+  <a href="{{ link_url }}" class="Hero-link" {% if section.settings.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}>
+{% endif %}
+
+
+
+<div class="Hero">
+  <div class="Hero-block">
+    {% if section.settings.media_1_type == 'image' and section.settings.image_1 != blank %}
+      {{ section.settings.image_1 | image_url: width: 1000 | image_tag }}
+    {% elsif section.settings.media_1_type == 'video' and section.settings.video_1 != blank %}
+      {{ section.settings.video_1 | video_tag: controls: true, autoplay: true, loop: true, muted: true }}
+    {% else %}
+      <p>Please add your image or video</p>
+    {% endif %}
+  </div>
+
+  <div class="Hero-block">
+    {% if section.settings.media_2_type == 'image' and section.settings.image_2 != blank %}
+      {{ section.settings.image_2 | image_url: width: 1000 | image_tag }}
+    {% elsif section.settings.media_2_type == 'video' and section.settings.video_2 != blank %}
+      {{ section.settings.video_2 | video_tag: controls: true, autoplay: true, loop: true, muted: true }}
+    {% else %}
+      <p>Please add your image or video</p>
+    {% endif %}
+  </div>
+</div>
+
+{% if link_url != blank %}
+  </a>
+{% endif %}
+
+
+
+<style>
+  .Hero {
+    display: flex;
+    height: 512px;
+    width: 100%;
+  }
+
+  .Hero-block {
+    display: flex;
+    height: 100%;
+    width: 50%;
+  }
+
+  .Hero-block img,
+  .Hero-block video {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+
+  .Hero-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+</style>
+
+
+
+
+
+
+
+
+Practice 3
+I want to create a hero section, it will have:
+1 image
+1 image
+Media can be positioned left or right of text
+A header text
+A body text
+
+
+
+{% schema %}
+{
+  "name": "Hero standout",
+
+  "settings": [
+
+    {
+      "type": "header",
+      "content": "Media"
+    },
+
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "options": [
+        {
+          "label": "Left",
+          "value": "left"
+        },
+        {
+          "label": "Right",
+          "value": "right"
+        }
+      ],
+      "default": "left"
+    },
+
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image"
+    },
+
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Image 2"
+    },
+
+
+    {
+      "type": "header",
+      "content": "Text"
+    },
+
+    {
+      "type": "text",
+      "id": "hero_text",
+      "label": "H1"
+    },
+
+    {
+      "type": "text",
+      "id": "body_text",
+      "label": "Body"
+    }
+
+  ],
+
+  "presets": [
+    {
+      "name": "Hero standout"
+    }
+  ]
+}
+
+{% endschema %}
+
+
+<div class="Hero Hero--{{ section.settings.image_position }}">
+
+
+  <div class="Media">
+    <div class="image-block">
+      {% if section.settings.image_1 != blank %}
+        {{ section.settings.image_1 | image_url: width: 390 | image_tag  }}
+      {% else %}
+        <p>Please add your image</p>
+      {% endif %}
+    </div>
+
+
+    
+    <div class="image-block">
+      {% if section.settings.image_2 != blank %}
+        {{ section.settings.image_2 | image_url: width: 390 | image_tag }}
+      {% else %}
+        <p>Please add your image</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+
+  
+  <div class="Text">
+
+    {% if section.settings.hero_text != blank %}
+      <h1 class="text"> {{ section.settings.hero_text }} </h1>
+    {% else %}
+      <h1>Lorem Ipsum</h1>
+    {% endif %}
+
+
+    {% if section.settings.body_text != blank %}
+
+      <p class="text">
+        {{ section.settings.body_text }}
+      </p>
+
+    {% else %}
+
+      <p>Input body text</p>
+
+    {% endif %}
+
+  </div>
+
+</div>
+
+
+<style>
+
+
+  .Hero {
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+    width: 100%;
+  }
+
+
+
+
+  .Hero--left {
+    flex-direction: row;
+  }
+
+  .Hero--right {
+    flex-direction: row-reverse;
+  }
+
+
+ 
+
+  .Media {
+    display: flex;
+    gap: 20px;
+    width: 720px;
+    height: 512px;
+    flex-shrink: 0;
+  }
+
+
+ 
+  .image-block {
+    display: flex;
+    width: 50%;
+    height: 100%;
+  }
+
+
+  .image-block img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+
+ 
+
+  .Text {
+    flex: 1;
+  }
+
+
+  .text {
+    font-size: 24px;
+  }
+
+</style>
+
+
+
+
+
+
+
+
+
+
+4. 
+
+I am trying to create a section template on shopify
+It will also use blocks and be able to add blocks
+... the one we were doing before doesn't add blocks
+
+it will have:
+
+An Image picker
+An Image position dropdown or switch: Left / Right
+The image will actually move left or right when you change the setting.
+
+
+{% comment %}
+  Image Position Test
+
+  Section settings:
+  - Image position: Left / Right
+
+  Blocks:
+  - Image
+  - Text
+
+  Merchants can:
+  - Add blocks
+  - Delete blocks
+  - Reorder blocks
+  - Edit each block
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Image position test",
+
+  "settings": [
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    }
+  ],
+
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    },
+
+    {
+      "type": "text",
+      "name": "Text",
+
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body text"
+        }
+      ]
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Image position test",
+
+      "blocks": [
+        {
+          "type": "image"
+        },
+
+        {
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+
+
+
+
+<div class="image-section image-section--{{ section.settings.image_position }}">
+  <div class="image-section__content">
+    {% for block in section.blocks %}
+
+
+      {% if block.type == 'image' %}
+        <div class="image-block" {{ block.shopify_attributes }}>
+          {% if block.settings.image != blank %}
+            {{ block.settings.image | image_url: width: 800 | image_tag }}
+          {% else %}
+            <p>Please select an image</p>
+          {% endif %}
+        </div>
+
+
+      {% elsif block.type == 'text' %}
+        <div class="text-block" {{ block.shopify_attributes }}>
+          {% if block.settings.heading != blank %}
+            <h2>{{ block.settings.heading }}</h2>
+          {% endif %}
+
+          {% if block.settings.body != blank %}
+            <p>{{ block.settings.body }}</p>
+          {% endif %}
+        </div>
+
+
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+
+
+
+
+<style>
+
+  .image-section {
+    width: 100%;
+  }
+
+
+  .image-section__content {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+
+
+  .image-section--left
+  .image-section__content {
+    flex-direction: row;
+  }
+
+
+  .image-section--right
+  .image-section__content {
+    flex-direction: row-reverse;
+  }
+
+
+  .image-block {
+    width: 50%;
+  }
+
+
+  .image-block img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+
+  .text-block {
+    width: 50%;
+  }
+
+
+</style>
+
+
+
+
+
+
+
+
+
+5. 
+
+{% comment %}
+  I am trying to create a section template on Shopify.
+
+  It will have:
+  - An Image picker
+  - A title
+  - A body text
+{% endcomment %}
+
+
+{% schema %}
+
+{
+  "name": "category",
+
+  "settings": [
+
+    {
+      "type": "header",
+      "content": "Category"
+    },
+
+    {
+      "type": "image_picker",
+      "label": "Image",
+      "id": "image"
+    },
+
+    {
+      "type": "text",
+      "label": "Title",
+      "id": "text"
+    },
+
+    {
+      "type": "textarea",
+      "label": "Body",
+      "id": "body"
+    },
+
+    {
+      "type": "image_picker",
+      "label": "Image 2",
+      "id": "image_2"
+    },
+
+    {
+      "type": "text",
+      "label": "Title 2",
+      "id": "text_2"
+    },
+
+    {
+      "type": "textarea",
+      "label": "Body 2",
+      "id": "body_2"
+    },
+
+    {
+      "type": "image_picker",
+      "label": "Image 3",
+      "id": "image_3"
+    },
+
+    {
+      "type": "text",
+      "label": "Title 3",
+      "id": "text_3"
+    },
+
+    {
+      "type": "textarea",
+      "label": "Body 3",
+      "id": "body_3"
+    }
+
+  ],
+
+  "presets": [
+    {
+      "name": "Category"
+    }
+  ]
+}
+
+{% endschema %}
+
+
+<div class="Category">
+
+  <!-- CATEGORY 1 -->
+
+  <div class="media-block">
+
+    {% if section.settings.image != blank %}
+      <div class="image"> {{ section.settings.image  | image_url: width: 800  | image_tag: loading: 'lazy' }}  </div>
+    {% endif %}
+
+    <div class="text">
+
+      {% if section.settings.text != blank %}
+        <h3>{{ section.settings.text }}</h3>
+      {% else %}
+        <h3>Add title</h3>
+      {% endif %}
+
+      {% if section.settings.body != blank %}
+        <p>{{ section.settings.body }}</p>
+      {% else %}
+        <p>Add body text</p>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+
+  <!-- CATEGORY 2 -->
+
+  <div class="media-block">
+
+    {% if section.settings.image_2 != blank %}
+      <div class="image"> {{ section.settings.image_2  | image_url: width: 800  | image_tag: loading: 'lazy'   }}  </div>
+    {% endif %}
+
+    <div class="text">
+
+      {% if section.settings.text_2 != blank %}
+        <h3>{{ section.settings.text_2 }}</h3>
+      {% else %}
+        <h3>Add title</h3>
+      {% endif %}
+
+      {% if section.settings.body_2 != blank %}
+        <p>{{ section.settings.body_2 }}</p>
+      {% else %}
+        <p>Add body text</p>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+
+  <!-- CATEGORY 3 -->
+
+  <div class="media-block">
+
+    {% if section.settings.image_3 != blank %}
+      <div class="image">  {{ section.settings.image_3  | image_url: width: 800 | image_tag: loading: 'lazy'  }}  </div>
+    {% endif %}
+
+    <div class="text">
+
+      {% if section.settings.text_3 != blank %}
+        <h3>{{ section.settings.text_3 }}</h3>
+      {% else %}
+        <h3>Add title</h3>
+      {% endif %}
+
+      {% if section.settings.body_3 != blank %}
+        <p>{{ section.settings.body_3 }}</p>
+      {% else %}
+        <p>Add body text</p>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<style>
+
+.Category {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.media-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 320px;
+}
+
+.media-block .image {
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+}
+
+.media-block .image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.text h3 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.text p {
+  font-size: 18px;
+  margin: 0;
+}
+
+</style>
+
+
+
+
+
+
+5.
+{% comment %} 
+ Reusable Category Section 
+
+ Each media-block is a Shopify block. 
+ Each block contains: 
+ - An image picker 
+ - A title 
+ - A body text Blocks can be: 
+ - Added 
+ - Deleted 
+ - Reordered 
+ 
+ {% endcomment %}
+
+
+ {% schema %}
+ { "name" : "category",
+    "settings" : [
+        { "type" :"header",
+          "content" :"Category"
+        }
+
+
+    ],
+
+    "blocks": [
+        {"type": "media-block",
+          "name" : "Media block",
+          "settings":[
+
+            { "type" : "image_picker",
+               "name" : "image",
+               "id" : "image"
+            },
+
+             { "type" : "text",
+               "name" : "Title",
+               "id" : "text"
+            },
+
+             { "type" : "text_area",
+               "name" : "Body",
+               "id" : "body"
+            },
+
+
+
+
+          ]
+        
+        }
+
+
+
+    ],
+
+    "presets" :[
+        { "name" :"Category",
+            "blocks" :[
+
+               {"type" :"media-block"
+            
+            }, 
+
+
+              {"type" :"media-block"
+            
+            },
+
+
+              {"type" :"media-block"
+            
+            },
+
+
+
+
+            ]
+        
+        }
+
+
+    ]
+
+}
+
+{% endschema %}
+
+
+
+
+
+<div class="Category">
+
+    
+    {% for block in section.blocks %}
+    
+    
+    
+    
+    
+    
+    <div class="media-block" {{ block.shopify_attributes }}>
+    
+    
+        {% if block.settings.image != blank %}
+        <div class="image">
+        {{ block.settings.image | image_url: width: 800 | image_tag: loading: 'lazy' }}
+        </div>
+    
+        {% endif %}
+    
+    
+    
+        <div class="text">
+    
+           {% if block.settings.text != blank %}
+           <h3> {{ block.settings.text }} </h3>
+           {% else %}
+           <h3>Add title</h3>
+           {% endif %}
+    
+           {% if block.settings.body != blank %}
+           <p> {{ block.settings.body }} </p>
+           {% else %}
+           <p>Add body text</p>
+           {% endif %}
+    
+    
+        </div>
+    
+    </div>
+
+
+
+</div>
+ 
+
+<style>
+
+.Category {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.media-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 320px;
+}
+
+.media-block .image {
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+}
+
+.media-block .image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.text h3 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.text p {
+  font-size: 18px;
+  margin: 0;
+}
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+6.
+{% comment %}
+  I am going to use block for this one
+I want to create a section
+it will have:
+1 image
+a Title
+a botton link (href is better for this one)
+{% endcomment %}
+
+
+ {% schema %}
+
+ { "name" :"Collection",
+    "settings" : [
+        { "type" :"header",
+            "content":"container"
+        }
+
+
+    ],
+
+
+    "blocks": [
+        {"name" :"Category block",
+            "type": "category-block",
+            "settings": [
+                {"type" : "image_picker",
+                    "id" : "image",
+                    "label": "image"
+                },
+
+                 {"type" : "text",
+                    "id" : "title",
+                    "label": "Title"
+                },
+
+
+                 {"type" : "text",
+                    "id" : "body",
+                    "label": "Body"
+                },
+
+                 {"type" : "url",
+                    "id" : "link",
+                    "label": "Link"
+                },
+
+                {
+                  "type": "checkbox",
+                  "id": "open_in_new_tab",
+                  "label": "Open link in new tab",
+                  "default": false
+                }
+
+
+
+            ]
+        }
+
+
+
+
+
+    ],
+
+
+    "presets" :[
+        {"name":"Collection",
+
+            "blocks": [
+
+                {"type" :"category-block"
+                
+                },
+
+                {"type" :"category-block"
+                
+                }
+
+               
+
+
+
+            ]
+
+
+
+
+        }
+
+
+    ]
+
+}
+
+{% endschema %}
+
+
+
+
+
+<div class="collection">
+    
+
+    {% for block in section.blocks %}
+    
+    <div class="category-block"  {{ block.shopify_attributes }}>
+    
+        {% if block.settings.image != blank %}
+        <div class="image">
+               {{ block.settings.image | image_url: width:720 , height:900 | image_tag: loading: 'lazy'  }}
+        </div>
+        {% endif %}
+    
+        <div class="content">
+    
+            {% if block.settings.title != blank %}
+            <h2>{{ block.settings.title }}</h2>
+            {% else %}
+            <h2>Add title</h2>
+            {% endif %}
+    
+    
+            {% if block.settings.body != blank %}
+            <p>{{ block.settings.body }}</p>
+            {% else %}
+            <p>Add body text</p>
+            {% endif %}
+
+
+
+             {% if block.settings.link != blank %}
+        <a href="{{ block.settings.link }}" class="Hero-link" {% if block.settings.open_in_new_tab %} target="_blank" rel="noopener"{% endif %}>
+              <p>EXPLORE THE COLLECTION</p></a>
+        {% endif %}
+
+
+        </div>
+    
+    
+    
+    
+    
+       
+    
+    </div>
+
+    {% endfor %}
+
+
+</div>
+
+
+<style>
+
+    .collection {
+        display: flex;
+        gap: 4px;
+        align-items: flex-start;
+        width: 100%;
+        padding: 4px;
+    }
+
+    .category-block {
+        display: flex;
+        flex-direction: column;
+        width: 720px;
+        height: 900px;
+        justify-content: end;
+    }
+
+    .category-block .image {
+        width: 100%;
+        height: 100%;
+    }
+
+    .category-block .image img {
+         display: block;
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
+    }
+
+
+    .category-block .content {
+        position: absolute;
+        padding: 24px;
+        z-index: 2;
+        
+    }
+
+    .content h2 {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 48px;
+        margin-bottom: 8px;
+        color: white;
+    }
+
+     .content p {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 18px;
+        margin-bottom: 16px;
+        color: white;
+    }
+
+    .content a {
+        text-decoration: underline;
+        text-underline-position: under;
+        text-underline-offset: 4px;
+        color: white;
+        text-transform: capitalize;
+        font-size: 18px;
+    }
+
+     .content a p {
+        color: white;
+        text-underline-position: below;
+        text-transform: capitalize;
+        font-size: 18px;
+    }
+
+
+
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+7. 
+I want to create a Featured Collection section 
+built the way Dawn does it, 
+using render 'card-product'
+with everything pulled straight from section.settings (no blocks, no variables)
+
+{% schema %}
+
+{"name": "Featured Collection",
+    "settings": [
+
+       { "type": "text",
+        "id" : "heading",
+        "label": "Heading",
+        "default": "Featured Collection"
+    
+    },
+
+    {"type": "collection",
+        "id" : "collection",
+        "label" : "Collection"
+    
+    },
+
+    {"type" : "range",
+        "id" : "products_to_show",
+        "label" : "Products to show",
+        "min" : 2,
+        "max" : 12,
+        "step" : 1,
+        "default" :4
+    
+    },
+
+
+    {"type" : "range",
+        "id" : "columns_desktop",
+        "label" : "Columns desktop",
+        "min" : 1,
+        "max" : 5,
+        "step" : 1,
+        "default" :3
+    
+    },
+
+    { "type" : "select",
+        "id" : "image_ratio",
+        "label" :"image ratio",
+        "options": [
+            {"value" : "adapt",
+                "label" : "Adapt to change"
+            },
+
+            {"value" : "portrait",
+                "label" : "Portrait"
+            },
+
+            {"value" : "square",
+                "label" : "Square"
+            }
+        ],
+
+        "default" : "square"
+
+    
+    
+    },
+
+
+      { "type" : "select",
+        "id" : "image_shape",
+        "label" :"Image shape",
+        "options": [
+            {"value" : "default",
+                "label" : "Default"
+            },
+
+            {"value" : "round",
+                "label" : "Round"
+            },
+
+            {"value" : "blob",
+                "label" : "Blob"
+            }
+        ],
+
+        "default" : "square"
+
+    
+    
+    },
+
+    {"type" : "checkbox",
+        "id" : "show_vendor",
+        "label" : "Show Vendor",
+        "default" : false
+    
+    },
+
+       {"type" : "checkbox",
+        "id" : "show_rating",
+        "label" : "Show rating",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "show_secondary_image",
+        "label" : "Show second image on hover",
+        "default" : false
+
+    }
+
+    
+
+
+     
+
+
+
+    ],
+
+
+    "presets" : [
+
+        { "name": "Featured Collection"
+        
+        }
+    ]
+
+}
+
+{% endschema %}
+
+
+<div class="featured-collection">
+    
+    <div class="featured-collection__heading">
+        <h2>{{ section.settings.heading }}</h2>
+    </div>
+    
+    
+    <ul class=" featured-collection__grid " style = "--columns-desktop: {{ section.settings.columns_desktop }}">
+        {% for product in section.settings.collection.products  limit: section.settings.products_to_show  %}
+    
+        <li class="featured-collection__item">
+            {% render 'card-product',
+               card_product: product,
+                media_aspect_ratio: section.settings.image_ratio,
+                image_shape: section.settings.image_shape,
+                show_vendor: section.settings.show_vendor,
+                show_rating: section.settings.show_rating,
+                show_secondary_image: section.settings.show_secondary_image
+
+%}
+        </li>
+
+        {% endfor %}
+    </ul>
+    
+</div>
+
+
+
+<style>
+
+.featured-collection {
+    padding: 40px 0;
+}
+
+.featured-collection__heading {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 40px;
+  }
+
+  .featured-collection__grid {
+    display: grid;
+    /* grid-template-columns: repeat(2, 1fr); */
+    grid-template-columns: repeat(var(--columns_mobile), 1fr);
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  @media screen and (min-width: 768px) {
+
+    .featured-collection__grid {
+        grid-template-columns: repeat(var(--columns-desktop), 1fr);
+    }
+    
+  }
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+7. same as the top.. updated version after adding other feature on the schema
+like .....Make section full width  and columns mobile
+I want to create a Featured Collection section 
+built the way Dawn does it, 
+using render 'card-product'
+with everything pulled straight from section.settings (no blocks, no variables)
+
+{% schema %}
+
+{"name": "Featured Collection",
+    "settings": [
+
+       { "type": "text",
+        "id" : "heading",
+        "label": "Heading",
+        "default": "Featured Collection"
+    
+    },
+
+    {"type": "collection",
+        "id" : "collection",
+        "label" : "Collection"
+    
+    },
+
+    {"type" : "range",
+        "id" : "products_to_show",
+        "label" : "Products to show",
+        "min" : 2,
+        "max" : 12,
+        "step" : 1,
+        "default" :4
+    
+    },
+
+
+    {"type" : "range",
+        "id" : "columns_desktop",
+        "label" : "Columns desktop",
+        "min" : 1,
+        "max" : 5,
+        "step" : 1,
+        "default" :3
+    
+    },
+
+    { "type" : "select",
+        "id" : "image_ratio",
+        "label" :"image ratio",
+        "options": [
+            {"value" : "adapt",
+                "label" : "Adapt to change"
+            },
+
+            {"value" : "portrait",
+                "label" : "Portrait"
+            },
+
+            {"value" : "square",
+                "label" : "Square"
+            }
+        ],
+
+        "default" : "square"
+
+    
+    
+    },
+
+
+      { "type" : "select",
+        "id" : "image_shape",
+        "label" :"Image shape",
+        "options": [
+            {"value" : "default",
+                "label" : "Default"
+            },
+
+            {"value" : "round",
+                "label" : "Round"
+            },
+
+            {"value" : "blob",
+                "label" : "Blob"
+            }
+        ],
+
+        "default" : "square"
+
+    
+    
+    },
+
+    {"type" : "checkbox",
+        "id" : "show_vendor",
+        "label" : "Show Vendor",
+        "default" : false
+    
+    },
+
+       {"type" : "checkbox",
+        "id" : "show_rating",
+        "label" : "Show rating",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "show_secondary_image",
+        "label" : "Show second image on hover",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "full_width",
+        "label" : "Make section full width",
+        "default" : false
+
+    },
+
+
+     {"type" : "select",
+        "id" : "columns_mobile",
+        "label" : "Columns on mobile",
+        "options" : [
+            { "value" : "1", 
+                "label" : "1 column" 
+            
+            },
+
+            { "value" : "2", 
+                "label" : "2 columns" 
+            
+            }
+        ],
+
+        "default" : "2"
+
+    },
+
+     {"type" : "checkbox",
+        "id" : "swipe_on_mobile",
+        "label" : "Enable swipe on mobile",
+        "default" : false
+
+    }
+
+
+
+
+    ],
+
+
+    "presets" : [
+
+        { "name": "Featured Collection"
+        
+        }
+    ]
+
+}
+
+{% endschema %}
+
+
+<div class="featured-collection
+    {% if section.settings.full_width %}
+      featured-collection--full-width{% endif %}">
+    
+    <div class="featured-collection__heading">
+        <h2>{{ section.settings.heading }}</h2>
+    </div>
+    
+    
+
+    <ul
+  class="featured-collection__grid
+    {% if section.settings.swipe_on_mobile %}
+      featured-collection__grid--swipe
+    {% endif %}"
+  style="
+    --columns-desktop: {{ section.settings.columns_desktop }};
+    --columns-mobile: {{ section.settings.columns_mobile }}
+  "
+>
+
+        {% for product in section.settings.collection.products  limit: section.settings.products_to_show  %}
+    
+        <li class="featured-collection__item">
+            {% render 'card-product',
+               card_product: product,
+                media_aspect_ratio: section.settings.image_ratio,
+                image_shape: section.settings.image_shape,
+                show_vendor: section.settings.show_vendor,
+                show_rating: section.settings.show_rating,
+                show_secondary_image: section.settings.show_secondary_image
+
+%}
+        </li>
+
+        {% endfor %}
+    </ul>
+    
+</div>
+
+
+
+<style>
+
+.featured-collection {
+    padding: 40px 0;
+}
+
+.featured-collection--full-width {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.featured-collection__heading {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 40px;
+  }
+
+  .featured-collection__grid {
+    display: grid;
+  /*  grid-template-columns: repeat(2, 1fr); */
+    grid-template-columns: repeat(var(--columns-mobile), 1fr);
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .featured-collection__grid--swipe {
+    grid-auto-flow: column;
+    overflow-x: auto;
+  }
+
+  @media screen and (min-width: 768px) {
+
+    .featured-collection__grid {
+        grid-template-columns: repeat(var(--columns-desktop), 1fr);
+    }
+    
+  }
+
+</style>
+
+Normally, a grid places items in rows, 
+filling the first row before moving to the next.
+
+But grid-auto-flow: column tells it to place items down columns instead, 
+creating additional columns as needed.
+
+overflow-x: auto;
+allows horizontal scrolling when the 
+content extends beyond the width of its container.
+
+
+
+
+
+
+
+
+
+
+
+8. Same thing as the above... but now we are adding:
+description
+show_description
+show_view_all button
+view_all_style — select with 3 options 
+(link, outline, solid) — each option maps to a different CSS class
+header- to organize the huge settings list
+
+
+
+{% schema %}
+
+{"name": "Featured Collection",
+    "settings": [
+
+       { "type": "text",
+        "id" : "heading",
+        "label": "Heading",
+        "default": "Featured Collection"
+    
+    },
+
+
+     { "type": "richtext",
+        "id" : "description",
+        "label": "Description"
+        
+    },
+
+    { "type" : "checkbox",
+        "id" : "show_description",
+        "label" : "show collection own's description instead",
+        "default" : false
+    
+    
+    },
+
+    {"type": "header",
+     "content" : "Collection settings"
+
+     },
+
+
+
+
+
+    {"type": "collection",
+        "id" : "collection",
+        "label" : "Collection"
+    
+    },
+
+    { "type" :"checkbox",
+        "id" : "show_view_all_button",
+        "label" : "show view all button",
+        "default": false
+    },
+
+
+
+    {"type" : "select",
+        "id" :"view_all_style",
+        "label" :"View all button style",
+        "options" : [
+            { "value" : "link", 
+                "label" : "Link"
+             },
+
+
+            { "value" : "outline", 
+                "label" : "Outline button" 
+            },
+
+            { "value" : "solid",
+                 "label" : "Solid button" 
+                }
+
+        ],
+
+        "default" : "solid"
+
+    },
+    
+    
+
+       {"type": "header",
+        "content" : "Image settings"
+
+
+    },
+
+    {"type" : "range",
+        "id" : "products_to_show",
+        "label" : "Products to show",
+        "min" : 2,
+        "max" : 12,
+        "step" : 1,
+        "default" :4
+    
+    },
+
+
+    {"type" : "range",
+        "id" : "columns_desktop",
+        "label" : "Columns desktop",
+        "min" : 1,
+        "max" : 5,
+        "step" : 1,
+        "default" :3
+    
+    },
+
+
+    {"type" : "checkbox",
+    "id" : "enable_desktop_slider",
+    "label" : "Enable slider on desktop",
+    "default" : false
+
+},
+
+
+
+    { "type" : "select",
+        "id" : "image_ratio",
+        "label" :"image ratio",
+        "options": [
+            {"value" : "adapt",
+                "label" : "Adapt to change"
+            },
+
+            {"value" : "portrait",
+                "label" : "Portrait"
+            },
+
+            {"value" : "square",
+                "label" : "Square"
+            }
+        ],
+
+        "default" : "square"
+
+    
+    
+    },
+
+
+      { "type" : "select",
+        "id" : "image_shape",
+        "label" :"Image shape",
+        "options": [
+            {"value" : "default",
+                "label" : "Default"
+            },
+
+            {"value" : "round",
+                "label" : "Round"
+            },
+
+            {"value" : "blob",
+                "label" : "Blob"
+            }
+        ],
+
+        "default" : "default"
+
+    
+    
+    },
+
+    {"type" : "checkbox",
+        "id" : "show_vendor",
+        "label" : "Show Vendor",
+        "default" : false
+    
+    },
+
+       {"type" : "checkbox",
+        "id" : "show_rating",
+        "label" : "Show rating",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "show_secondary_image",
+        "label" : "Show second image on hover",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "full_width",
+        "label" : "Make section full width",
+        "default" : false
+
+    },
+
+
+     {"type" : "select",
+        "id" : "columns_mobile",
+        "label" : "Columns on mobile",
+        "options" : [
+            { "value" : "1", 
+                "label" : "1 column" 
+            
+            },
+
+            { "value" : "2", 
+                "label" : "2 columns" 
+            
+            }
+        ],
+
+        "default" : "2"
+
+    },
+
+     {"type" : "checkbox",
+        "id" : "swipe_on_mobile",
+        "label" : "Enable swipe on mobile",
+        "default" : false
+
+    },
+
+
+
+
+
+
+    {"type": "header",
+    "content" : "Padding"
+
+},
+   
+
+
+    {"type" : "range",
+    "id" : "padding_top",
+    "label" : "Top padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+},
+
+{"type" : "range",
+    "id" : "padding_bottom",
+    "label" : "Bottom padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+}
+
+
+
+
+
+
+
+    ],
+
+
+    "presets" : [
+
+        { "name": "Featured Collection prt"
+        
+        }
+    ]
+
+}
+
+{% endschema %}
+
+
+<div class="featured-collection featured-collection-{{ section.id }}
+    {% if section.settings.full_width %} 
+     featured-collection--full-width
+     {% endif %}">
+    
+    <div class="featured-collection__heading">
+        <h2>{{ section.settings.heading }}</h2>
+
+
+         {% if section.settings.show_description %}
+            <div class="featured-collection__description">
+                {{ section.settings.collection.description }}
+            </div>
+        {% elsif section.settings.description != blank %}
+            <div class="featured-collection__description">
+                {{ section.settings.description }}
+            </div>
+        {% endif %}
+
+
+
+
+
+
+
+
+
+
+    </div>
+    
+    
+
+
+
+
+
+
+
+
+
+    <ul
+  class="featured-collection__grid
+    {% if section.settings.swipe_on_mobile %}
+      featured-collection__grid--swipe
+    {% endif %}
+     {% if section.settings.enable_desktop_slider %} 
+    featured-collection__grid--slider-desktop
+    {% endif %} "
+  style="
+    --columns-desktop: {{ section.settings.columns_desktop }};
+    --columns-mobile: {{ section.settings.columns_mobile }}
+  "
+>
+
+        {% for product in section.settings.collection.products  limit: section.settings.products_to_show  %}
+    
+        <li class="featured-collection__item">
+            {% render 'card-product',
+               card_product: product,
+                media_aspect_ratio: section.settings.image_ratio,
+                image_shape: section.settings.image_shape,
+                show_vendor: section.settings.show_vendor,
+                show_rating: section.settings.show_rating,
+                show_secondary_image: section.settings.show_secondary_image
+
+%}
+        </li>
+
+        {% endfor %}
+    </ul>
+
+
+
+
+
+  {% if section.settings.show_view_all_button %}
+<div class="featured-collection__view-all">
+    <a href="{{ section.settings.collection.url }}" class="featured-collection__view-all-btn
+            featured-collection__view-all-btn--{{ section.settings.view_all_style }}">
+                    View all
+                </a>
+</div>
+
+ {% endif %}
+
+
+
+
+
+
+    
+</div>
+
+
+
+<style>
+
+ .featured-collection-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  /* section.id is unique per section instance. 
+  If you drag this section onto the page twice, each copy gets its own section.id 
+  (something like template--123__featured_collection), 
+  so .featured-collection-{{ section.id }} produces a different CSS class for each one. 
+  That's what lets two copies of the same section have different padding values without fighting each other.
+
+  */
+  
+.featured-collection--full-width {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.featured-collection__heading {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 40px;
+  }
+
+.featured-collection__description {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+  .featured-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns-mobile), 1fr);
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .featured-collection__grid--swipe {
+     grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - (var(--columns-mobile) - 1) * 20px) / var(--columns-mobile));
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .featured-collection__grid--swipe .featured-collection__item {
+    scroll-snap-align: start;
+
+}
+
+  @media screen and (min-width: 768px) {
+
+    .featured-collection__grid {
+        grid-template-columns: repeat(var(--columns-desktop), 1fr);
+    }
+
+
+     .featured-collection__grid--slider-desktop {
+        grid-template-columns: none;   /* <-- add this line */
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% - (var(--columns-desktop) - 1) * 20px) / var(--columns-desktop));
+        /* This math formula automatically calculates the exact width of a single column when using CSS Grid.
+        It ensures that no matter how many columns you want (var(--columns-desktop)), 
+        they will all fit perfectly onto one single row, leaving exactly 20px of space (gaps) between them, 
+        without stretching past 100% of the screen width. 
+
+
+        If you have 4 columns, you only have 3 gaps between them.
+        The math does: (4 - 1) * 20px → 3 * 20px = 60px.
+        Result: The total space needed just for the gaps is 60px.
+
+        Subtract the Gaps from the Total Width
+        100% - (60px)
+
+
+        The browser takes the full width available (100%) and 
+        subtracts the gap space (60px).
+        Result: You are left with the exact remaining space available only for the actual content blocks.
+        
+
+        (Remaining Space) / var(--columns-desktop)
+
+        Finally, the browser takes that remaining space and 
+        divides it cleanly by the number of columns (4).
+        Result: Every column gets the exact same pixel width down to the decimal point.
+
+
+        Why Use grid-auto-columns with this Math?
+        Normally, CSS Grid wraps items to the next line. 
+        However, in Shopify sections (like product carousels or sliders), 
+        developers use grid-auto-columns to force items to stay on one single horizontal line 
+        so users can swipe through them.
+        By using this specific formula, the browser ensures that exactly 4 items fit perfectly on the screen at once, 
+        and the 5th item sits just off-screen, waiting to be scrolled into view!
+
+        */
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+
+        /* scroll-snap-type: x mandatory        tells the browser "when the user stops scrolling, 
+        snap to a stopping point," and 
+        scroll-snap-align: start         on each item tells it "this element is a valid stopping point.
+        " No JavaScript needed for basic snap-scrolling — that's the whole trick. */
+
+        padding-bottom: 10px;
+    }
+
+
+     .featured-collection__grid--slider-desktop .featured-collection__item {
+        scroll-snap-align: start;
+    }
+
+
+
+    
+  }
+
+.featured-collection__view-all {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.featured-collection__view-all-btn--link {
+    text-decoration: underline;
+}
+
+.featured-collection__view-all-btn--outline {
+    display: inline-block;
+    padding: 10px 24px;
+    border: 1px solid black;
+}
+
+.featured-collection__view-all-btn--solid {
+    display: inline-block;
+    padding: 10px 24px;
+    background: black;
+    color: white;
+}
+
+</style>
+
+
+Normally my product card doesn't still show the image on hover
+and also doesn't show the slider bar and also slider product count
+, doesn't show the rating and price...     because they are all 
+found in the asset file.. and they are actually the global styling for 
+the card product.. so I just have to render them like a component and
+add them at the beginning of my liquid file...
+
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-rating.css' | asset_url | stylesheet_tag }}
+
+{% if section.settings.image_shape == 'blob' %}
+  {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
+{% endif %}
+
+
+
+
+
+
+
+
+
+9. Still same code as above but we are adding
+JS for adding prev/next slider buttons and allow the slider number to show
+so we are creating a featured-collection-slider.js in the asset
+to have our slider code. and we must also wrap our ul section with
+<slider-component>         for the JS code to easily know what to identify
+also we are adding the slider button in our html to show our button
+Also our slider bar is showing which we need to
+show or hide it
+
+
+
+
+
+{% schema %}
+
+{"name": "Featured Collection",
+    "settings": [
+
+       { "type": "text",
+        "id" : "heading",
+        "label": "Heading",
+        "default": "Featured Collection"
+    
+    },
+
+
+     { "type": "richtext",
+        "id" : "description",
+        "label": "Description"
+        
+    },
+
+    { "type" : "checkbox",
+        "id" : "show_description",
+        "label" : "show collection own's description instead",
+        "default" : false
+    
+    
+    },
+
+    {"type": "header",
+     "content" : "Collection settings"
+
+     },
+
+
+
+
+
+    {"type": "collection",
+        "id" : "collection",
+        "label" : "Collection"
+    
+    },
+
+    { "type" :"checkbox",
+        "id" : "show_view_all_button",
+        "label" : "show view all button",
+        "default": false
+    },
+
+
+
+    {"type" : "select",
+        "id" :"view_all_style",
+        "label" :"View all button style",
+        "options" : [
+            { "value" : "link", 
+                "label" : "Link"
+             },
+
+
+            { "value" : "outline", 
+                "label" : "Outline button" 
+            },
+
+            { "value" : "solid",
+                 "label" : "Solid button" 
+                }
+
+        ],
+
+        "default" : "solid"
+
+    },
+    
+    
+
+       {"type": "header",
+        "content" : "Image settings"
+
+
+    },
+
+    {"type" : "range",
+        "id" : "products_to_show",
+        "label" : "Products to show",
+        "min" : 2,
+        "max" : 12,
+        "step" : 1,
+        "default" :4
+    
+    },
+
+
+    {"type" : "range",
+        "id" : "columns_desktop",
+        "label" : "Columns desktop",
+        "min" : 1,
+        "max" : 5,
+        "step" : 1,
+        "default" :3
+    
+    },
+
+
+    {"type" : "checkbox",
+    "id" : "enable_desktop_slider",
+    "label" : "Enable slider on desktop",
+    "default" : false
+
+},
+
+
+
+    { "type" : "select",
+        "id" : "image_ratio",
+        "label" :"image ratio",
+        "options": [
+            {"value" : "adapt",
+                "label" : "Adapt to change"
+            },
+
+            {"value" : "portrait",
+                "label" : "Portrait"
+            },
+
+            {"value" : "square",
+                "label" : "Square"
+            }
+        ],
+
+        "default" : "square"
+
+    
+    
+    },
+
+
+      { "type" : "select",
+        "id" : "image_shape",
+        "label" :"Image shape",
+        "options": [
+            {"value" : "default",
+                "label" : "Default"
+            },
+
+            {"value" : "round",
+                "label" : "Round"
+            },
+
+            {"value" : "blob",
+                "label" : "Blob"
+            }
+        ],
+
+        "default" : "default"
+
+    
+    
+    },
+
+    {"type" : "checkbox",
+        "id" : "show_vendor",
+        "label" : "Show Vendor",
+        "default" : false
+    
+    },
+
+       {"type" : "checkbox",
+        "id" : "show_rating",
+        "label" : "Show rating",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "show_secondary_image",
+        "label" : "Show second image on hover",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "full_width",
+        "label" : "Make section full width",
+        "default" : false
+
+    },
+
+
+     {"type" : "select",
+        "id" : "columns_mobile",
+        "label" : "Columns on mobile",
+        "options" : [
+            { "value" : "1", 
+                "label" : "1 column" 
+            
+            },
+
+            { "value" : "2", 
+                "label" : "2 columns" 
+            
+            }
+        ],
+
+        "default" : "2"
+
+    },
+
+     {"type" : "checkbox",
+        "id" : "swipe_on_mobile",
+        "label" : "Enable swipe on mobile",
+        "default" : false
+
+    },
+
+
+
+
+
+
+    {"type": "header",
+    "content" : "Padding"
+
+},
+   
+
+
+    {"type" : "range",
+    "id" : "padding_top",
+    "label" : "Top padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+},
+
+{"type" : "range",
+    "id" : "padding_bottom",
+    "label" : "Bottom padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+}
+
+
+
+
+
+
+
+    ],
+
+
+    "presets" : [
+
+        { "name": "Featured Collection prt"
+        
+        }
+    ]
+
+}
+
+{% endschema %}
+
+<script src="{{ 'featured-collection-slider.js' | asset_url }}" defer="defer"></script>
+
+/*    Script code can be added immediately after the end schema      */
+
+
+
+
+<div class="featured-collection featured-collection-{{ section.id }}
+    {% if section.settings.full_width %} 
+     featured-collection--full-width
+     {% endif %}">
+    
+    <div class="featured-collection__heading">
+        <h2>{{ section.settings.heading }}</h2>
+
+
+         {% if section.settings.show_description %}
+            <div class="featured-collection__description">
+                {{ section.settings.collection.description }}
+            </div>
+        {% elsif section.settings.description != blank %}
+            <div class="featured-collection__description">
+                {{ section.settings.description }}
+            </div>
+        {% endif %}
+
+
+
+
+
+
+
+
+
+
+    </div>
+    
+    
+
+
+
+
+
+
+
+
+
+    <slider-component>
+      <ul
+        class="featured-collection__grid
+      {% if section.settings.swipe_on_mobile %}
+        featured-collection__grid--swipe
+      {% endif %}
+       {% if section.settings.enable_desktop_slider %}
+      featured-collection__grid--slider-desktop
+      {% endif %} "
+        style="
+      --columns-desktop: {{ section.settings.columns_desktop }};
+      --columns-mobile: {{ section.settings.columns_mobile }}
+        "
+      >
+          {% for product in section.settings.collection.products  limit: section.settings.products_to_show  %}
+      
+          <li class="featured-collection__item">
+              {% render 'card-product',
+                 card_product: product,
+                  media_aspect_ratio: section.settings.image_ratio,
+                  image_shape: section.settings.image_shape,
+                  show_vendor: section.settings.show_vendor,
+                  show_rating: section.settings.show_rating,
+                  show_secondary_image: section.settings.show_secondary_image
+      
+      %}
+          </li>
+          {% endfor %}
+      </ul>
+
+
+      /* slider button   */
+      {% if section.settings.enable_desktop_slider %}
+        <div class="featured-collection__slider-buttons">
+            <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--prev">
+                &larr;
+            </button>
+            <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--next">
+                &rarr;
+            </button>
+        </div>
+    {% endif %}
+
+
+
+
+
+    </slider-component>
+
+
+
+
+
+  {% if section.settings.show_view_all_button %}
+<div class="featured-collection__view-all">
+    <a href="{{ section.settings.collection.url }}" class="featured-collection__view-all-btn
+            featured-collection__view-all-btn--{{ section.settings.view_all_style }}">
+                    View all
+                </a>
+</div>
+
+ {% endif %}
+
+
+
+
+
+
+    
+</div>
+
+
+
+<style>
+
+ .featured-collection-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  /* section.id is unique per section instance. 
+  If you drag this section onto the page twice, each copy gets its own section.id 
+  (something like template--123__featured_collection), 
+  so .featured-collection-{{ section.id }} produces a different CSS class for each one. 
+  That's what lets two copies of the same section have different padding values without fighting each other.
+
+  */
+  
+.featured-collection--full-width {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.featured-collection__heading {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 40px;
+  }
+
+.featured-collection__description {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+  .featured-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns-mobile), 1fr);
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .featured-collection__grid--swipe {
+     grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - (var(--columns-mobile) - 1) * 20px) / var(--columns-mobile));
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .featured-collection__grid--swipe .featured-collection__item {
+    scroll-snap-align: start;
+
+}
+
+  @media screen and (min-width: 768px) {
+
+    .featured-collection__grid {
+        grid-template-columns: repeat(var(--columns-desktop), 1fr);
+    }
+
+
+     .featured-collection__grid--slider-desktop {
+        grid-template-columns: none;   /* <-- add this line */
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% - (var(--columns-desktop) - 1) * 20px) / var(--columns-desktop));
+        /* This math formula automatically calculates the exact width of a single column when using CSS Grid.
+        It ensures that no matter how many columns you want (var(--columns-desktop)), 
+        they will all fit perfectly onto one single row, leaving exactly 20px of space (gaps) between them, 
+        without stretching past 100% of the screen width. 
+
+
+        If you have 4 columns, you only have 3 gaps between them.
+        The math does: (4 - 1) * 20px → 3 * 20px = 60px.
+        Result: The total space needed just for the gaps is 60px.
+
+        Subtract the Gaps from the Total Width
+        100% - (60px)
+
+
+        The browser takes the full width available (100%) and 
+        subtracts the gap space (60px).
+        Result: You are left with the exact remaining space available only for the actual content blocks.
+        
+
+        (Remaining Space) / var(--columns-desktop)
+
+        Finally, the browser takes that remaining space and 
+        divides it cleanly by the number of columns (4).
+        Result: Every column gets the exact same pixel width down to the decimal point.
+
+
+        Why Use grid-auto-columns with this Math?
+        Normally, CSS Grid wraps items to the next line. 
+        However, in Shopify sections (like product carousels or sliders), 
+        developers use grid-auto-columns to force items to stay on one single horizontal line 
+        so users can swipe through them.
+        By using this specific formula, the browser ensures that exactly 4 items fit perfectly on the screen at once, 
+        and the 5th item sits just off-screen, waiting to be scrolled into view!
+
+        */
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+
+        /* scroll-snap-type: x mandatory        tells the browser "when the user stops scrolling, 
+        snap to a stopping point," and 
+        scroll-snap-align: start         on each item tells it "this element is a valid stopping point.
+        " No JavaScript needed for basic snap-scrolling — that's the whole trick. */
+
+        padding-bottom: 10px;
+    }
+
+
+     .featured-collection__grid--slider-desktop .featured-collection__item {
+        scroll-snap-align: start;
+    }
+
+
+
+    
+  }
+
+.featured-collection__view-all {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.featured-collection__view-all-btn--link {
+    text-decoration: underline;
+}
+
+.featured-collection__view-all-btn--outline {
+    display: inline-block;
+    padding: 10px 24px;
+    border: 1px solid black;
+}
+
+.featured-collection__view-all-btn--solid {
+    display: inline-block;
+    padding: 10px 24px;
+    background: black;
+    color: white;
+}
+
+
+
+
+.featured-collection__slider-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.featured-collection__slider-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+    background: white;
+    cursor: pointer;
+}
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+10. Still same code as above but we are adding
+A Quick add button to render when you hover on
+the product card
+and we are doing that by 
+Loading the quick-add script conditionally, near your existing <script> line at the top
+
+
+
+
+{% schema %}
+
+{"name": "Featured Collection",
+    "settings": [
+
+       { "type": "text",
+        "id" : "heading",
+        "label": "Heading",
+        "default": "Featured Collection"
+    
+    },
+
+
+     { "type": "richtext",
+        "id" : "description",
+        "label": "Description"
+        
+    },
+
+    { "type" : "checkbox",
+        "id" : "show_description",
+        "label" : "show collection own's description instead",
+        "default" : false
+    
+    
+    },
+
+    {"type": "header",
+     "content" : "Collection settings"
+
+     },
+
+
+
+
+
+    {"type": "collection",
+        "id" : "collection",
+        "label" : "Collection"
+    
+    },
+
+    { "type" :"checkbox",
+        "id" : "show_view_all_button",
+        "label" : "show view all button",
+        "default": false
+    },
+
+
+
+    {"type" : "select",
+        "id" :"view_all_style",
+        "label" :"View all button style",
+        "options" : [
+            { "value" : "link", 
+                "label" : "Link"
+             },
+
+
+            { "value" : "outline", 
+                "label" : "Outline button" 
+            },
+
+            { "value" : "solid",
+                 "label" : "Solid button" 
+                }
+
+        ],
+
+        "default" : "solid"
+
+    },
+    
+    
+
+       {"type": "header",
+        "content" : "Image settings"
+
+
+    },
+
+    {"type" : "range",
+        "id" : "products_to_show",
+        "label" : "Products to show",
+        "min" : 2,
+        "max" : 12,
+        "step" : 1,
+        "default" :4
+    
+    },
+
+
+    {"type" : "range",
+        "id" : "columns_desktop",
+        "label" : "Columns desktop",
+        "min" : 1,
+        "max" : 5,
+        "step" : 1,
+        "default" :3
+    
+    },
+
+
+    {"type" : "checkbox",
+    "id" : "enable_desktop_slider",
+    "label" : "Enable slider on desktop",
+    "default" : false
+
+},
+
+
+
+    { "type" : "select",
+        "id" : "image_ratio",
+        "label" :"image ratio",
+        "options": [
+            {"value" : "adapt",
+                "label" : "Adapt to change"
+            },
+
+            {"value" : "portrait",
+                "label" : "Portrait"
+            },
+
+            {"value" : "square",
+                "label" : "Square"
+            }
+        ],
+
+        "default" : "square"
+
+    
+    
+    },
+
+
+      { "type" : "select",
+        "id" : "image_shape",
+        "label" :"Image shape",
+        "options": [
+            {"value" : "default",
+                "label" : "Default"
+            },
+
+            {"value" : "round",
+                "label" : "Round"
+            },
+
+            {"value" : "blob",
+                "label" : "Blob"
+            }
+        ],
+
+        "default" : "default"
+
+    
+    
+    },
+
+    {"type" : "checkbox",
+        "id" : "show_vendor",
+        "label" : "Show Vendor",
+        "default" : false
+    
+    },
+
+       {"type" : "checkbox",
+        "id" : "show_rating",
+        "label" : "Show rating",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "show_secondary_image",
+        "label" : "Show second image on hover",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "full_width",
+        "label" : "Make section full width",
+        "default" : false
+
+    },
+
+
+     {"type" : "select",
+        "id" : "columns_mobile",
+        "label" : "Columns on mobile",
+        "options" : [
+            { "value" : "1", 
+                "label" : "1 column" 
+            
+            },
+
+            { "value" : "2", 
+                "label" : "2 columns" 
+            
+            }
+        ],
+
+        "default" : "2"
+
+    },
+
+     {"type" : "checkbox",
+        "id" : "swipe_on_mobile",
+        "label" : "Enable swipe on mobile",
+        "default" : false
+
+    },
+
+
+
+    {"type" : "select",
+    "id" : "quick_add",
+    "label" : "Quick add button",
+    "options" : [
+        { "value" : "none", 
+          "label" : "None" 
+        },
+
+        { "value" : "standard", 
+          "label" : "Standard" 
+        }
+    ],
+    "default" : "none"
+
+},
+
+
+
+
+
+
+    {"type": "header",
+    "content" : "Padding"
+
+},
+   
+
+
+    {"type" : "range",
+    "id" : "padding_top",
+    "label" : "Top padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+},
+
+{"type" : "range",
+    "id" : "padding_bottom",
+    "label" : "Bottom padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+}
+
+
+
+
+
+
+
+    ],
+
+
+    "presets" : [
+
+        { "name": "Featured Collection prt"
+        
+        }
+    ]
+
+}
+
+{% endschema %}
+
+
+<script src="{{ 'featured-collection-slider.js' | asset_url }}" defer="defer"></script>
+
+/*    Script code can be added immediately after the end schema      */
+
+
+
+
+
+
+
+<div class="featured-collection featured-collection-{{ section.id }}
+    {% if section.settings.full_width %} 
+     featured-collection--full-width
+     {% endif %}">
+    
+    <div class="featured-collection__heading">
+        <h2>{{ section.settings.heading }}</h2>
+
+
+         {% if section.settings.show_description %}
+            <div class="featured-collection__description">
+                {{ section.settings.collection.description }}
+            </div>
+        {% elsif section.settings.description != blank %}
+            <div class="featured-collection__description">
+                {{ section.settings.description }}
+            </div>
+        {% endif %}
+
+
+
+
+
+
+
+
+
+
+    </div>
+    
+    
+
+
+
+
+
+
+
+
+
+    <slider-component>
+      <ul
+        class="featured-collection__grid
+      {% if section.settings.swipe_on_mobile %}
+        featured-collection__grid--swipe
+      {% endif %}
+       {% if section.settings.enable_desktop_slider %}
+      featured-collection__grid--slider-desktop
+      {% endif %} "
+        style="
+      --columns-desktop: {{ section.settings.columns_desktop }};
+      --columns-mobile: {{ section.settings.columns_mobile }}
+        "
+      >
+          {% for product in section.settings.collection.products  limit: section.settings.products_to_show  %}
+      
+          <li class="featured-collection__item">
+              {% render 'card-product',
+                 card_product: product,
+                  media_aspect_ratio: section.settings.image_ratio,
+                  image_shape: section.settings.image_shape,
+                  show_vendor: section.settings.show_vendor,
+                  show_rating: section.settings.show_rating,
+                  show_secondary_image: section.settings.show_secondary_image,
+                  quick_add: section.settings.quick_add
+      
+      %}
+          </li>
+          {% endfor %}
+      </ul>
+
+
+      /* slider button   */
+      {% if section.settings.enable_desktop_slider %}
+        <div class="featured-collection__slider-buttons">
+            <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--prev">
+                &larr;
+            </button>
+            <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--next">
+                &rarr;
+            </button>
+        </div>
+    {% endif %}
+
+
+
+
+
+    </slider-component>
+
+
+
+
+
+  {% if section.settings.show_view_all_button %}
+<div class="featured-collection__view-all">
+    <a href="{{ section.settings.collection.url }}" class="featured-collection__view-all-btn
+            featured-collection__view-all-btn--{{ section.settings.view_all_style }}">
+                    View all
+                </a>
+</div>
+
+ {% endif %}
+
+
+
+
+
+
+    
+</div>
+
+
+
+<style>
+
+ .featured-collection-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  /* section.id is unique per section instance. 
+  If you drag this section onto the page twice, each copy gets its own section.id 
+  (something like template--123__featured_collection), 
+  so .featured-collection-{{ section.id }} produces a different CSS class for each one. 
+  That's what lets two copies of the same section have different padding values without fighting each other.
+
+  */
+  
+.featured-collection--full-width {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.featured-collection__heading {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 40px;
+  }
+
+.featured-collection__description {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+  .featured-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns-mobile), 1fr);
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .featured-collection__grid--swipe {
+     grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - (var(--columns-mobile) - 1) * 20px) / var(--columns-mobile));
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .featured-collection__grid--swipe .featured-collection__item {
+    scroll-snap-align: start;
+
+}
+
+  @media screen and (min-width: 768px) {
+
+    .featured-collection__grid {
+        grid-template-columns: repeat(var(--columns-desktop), 1fr);
+    }
+
+
+     .featured-collection__grid--slider-desktop {
+        grid-template-columns: none;   /* <-- add this line */
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% - (var(--columns-desktop) - 1) * 20px) / var(--columns-desktop));
+        /* This math formula automatically calculates the exact width of a single column when using CSS Grid.
+        It ensures that no matter how many columns you want (var(--columns-desktop)), 
+        they will all fit perfectly onto one single row, leaving exactly 20px of space (gaps) between them, 
+        without stretching past 100% of the screen width. 
+
+
+        If you have 4 columns, you only have 3 gaps between them.
+        The math does: (4 - 1) * 20px → 3 * 20px = 60px.
+        Result: The total space needed just for the gaps is 60px.
+
+        Subtract the Gaps from the Total Width
+        100% - (60px)
+
+
+        The browser takes the full width available (100%) and 
+        subtracts the gap space (60px).
+        Result: You are left with the exact remaining space available only for the actual content blocks.
+        
+
+        (Remaining Space) / var(--columns-desktop)
+
+        Finally, the browser takes that remaining space and 
+        divides it cleanly by the number of columns (4).
+        Result: Every column gets the exact same pixel width down to the decimal point.
+
+
+        Why Use grid-auto-columns with this Math?
+        Normally, CSS Grid wraps items to the next line. 
+        However, in Shopify sections (like product carousels or sliders), 
+        developers use grid-auto-columns to force items to stay on one single horizontal line 
+        so users can swipe through them.
+        By using this specific formula, the browser ensures that exactly 4 items fit perfectly on the screen at once, 
+        and the 5th item sits just off-screen, waiting to be scrolled into view!
+
+        */
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+
+        /* scroll-snap-type: x mandatory        tells the browser "when the user stops scrolling, 
+        snap to a stopping point," and 
+        scroll-snap-align: start         on each item tells it "this element is a valid stopping point.
+        " No JavaScript needed for basic snap-scrolling — that's the whole trick. */
+
+        padding-bottom: 10px;
+    }
+
+
+     .featured-collection__grid--slider-desktop .featured-collection__item {
+        scroll-snap-align: start;
+    }
+
+
+
+    
+  }
+
+.featured-collection__view-all {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.featured-collection__view-all-btn--link {
+    text-decoration: underline;
+}
+
+.featured-collection__view-all-btn--outline {
+    display: inline-block;
+    padding: 10px 24px;
+    border: 1px solid black;
+}
+
+.featured-collection__view-all-btn--solid {
+    display: inline-block;
+    padding: 10px 24px;
+    background: black;
+    color: white;
+}
+
+
+
+
+.featured-collection__slider-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.featured-collection__slider-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+    background: white;
+    cursor: pointer;
+}
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+11.
+We are adding color scheme setting
+and it is also applied to our outer wrapper as a class:
+color-{{ section.settings.color_scheme }}
+
+Shopify's theme already ships global CSS for every scheme. 
+Every theme with color_scheme support has CSS rules baked in somewhere
+
+
+{% schema %}
+
+{"name": "Featured Collection",
+    "settings": [
+
+       { "type": "text",
+        "id" : "heading",
+        "label": "Heading",
+        "default": "Featured Collection"
+    
+    },
+
+
+     { "type": "richtext",
+        "id" : "description",
+        "label": "Description"
+        
+    },
+
+    { "type" : "checkbox",
+        "id" : "show_description",
+        "label" : "show collection own's description instead",
+        "default" : false
+    
+    
+    },
+
+    {"type": "header",
+     "content" : "Collection settings"
+
+     },
+
+
+
+
+
+    {"type": "collection",
+        "id" : "collection",
+        "label" : "Collection"
+    
+    },
+
+    { "type" :"checkbox",
+        "id" : "show_view_all_button",
+        "label" : "show view all button",
+        "default": false
+    },
+
+
+
+    {"type" : "select",
+        "id" :"view_all_style",
+        "label" :"View all button style",
+        "options" : [
+            { "value" : "link", 
+                "label" : "Link"
+             },
+
+
+            { "value" : "outline", 
+                "label" : "Outline button" 
+            },
+
+            { "value" : "solid",
+                 "label" : "Solid button" 
+                }
+
+        ],
+
+        "default" : "solid"
+
+    },
+    
+    
+
+       {"type": "header",
+        "content" : "Image settings"
+
+
+    },
+
+    {"type" : "range",
+        "id" : "products_to_show",
+        "label" : "Products to show",
+        "min" : 2,
+        "max" : 12,
+        "step" : 1,
+        "default" :4
+    
+    },
+
+
+    {"type" : "range",
+        "id" : "columns_desktop",
+        "label" : "Columns desktop",
+        "min" : 1,
+        "max" : 5,
+        "step" : 1,
+        "default" :3
+    
+    },
+
+
+    {"type" : "checkbox",
+    "id" : "enable_desktop_slider",
+    "label" : "Enable slider on desktop",
+    "default" : false
+
+},
+
+
+
+    { "type" : "select",
+        "id" : "image_ratio",
+        "label" :"image ratio",
+        "options": [
+            {"value" : "adapt",
+                "label" : "Adapt to change"
+            },
+
+            {"value" : "portrait",
+                "label" : "Portrait"
+            },
+
+            {"value" : "square",
+                "label" : "Square"
+            }
+        ],
+
+        "default" : "square"
+
+    
+    
+    },
+
+
+      { "type" : "select",
+        "id" : "image_shape",
+        "label" :"Image shape",
+        "options": [
+            {"value" : "default",
+                "label" : "Default"
+            },
+
+            {"value" : "round",
+                "label" : "Round"
+            },
+
+            {"value" : "blob",
+                "label" : "Blob"
+            }
+        ],
+
+        "default" : "default"
+
+    
+    
+    },
+
+    {"type" : "checkbox",
+        "id" : "show_vendor",
+        "label" : "Show Vendor",
+        "default" : false
+    
+    },
+
+       {"type" : "checkbox",
+        "id" : "show_rating",
+        "label" : "Show rating",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "show_secondary_image",
+        "label" : "Show second image on hover",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "full_width",
+        "label" : "Make section full width",
+        "default" : false
+
+    },
+
+
+     {"type" : "select",
+        "id" : "columns_mobile",
+        "label" : "Columns on mobile",
+        "options" : [
+            { "value" : "1", 
+                "label" : "1 column" 
+            
+            },
+
+            { "value" : "2", 
+                "label" : "2 columns" 
+            
+            }
+        ],
+
+        "default" : "2"
+
+    },
+
+     {"type" : "checkbox",
+        "id" : "swipe_on_mobile",
+        "label" : "Enable swipe on mobile",
+        "default" : false
+
+    },
+
+
+
+    {"type" : "select",
+    "id" : "quick_add",
+    "label" : "Quick add button",
+    "options" : [
+        { "value" : "none", 
+          "label" : "None" 
+        },
+
+        { "value" : "standard", 
+          "label" : "Standard" 
+        }
+    ],
+    "default" : "none"
+
+},
+
+
+{"type" : "color_scheme",
+    "id" : "color_scheme",
+    "label" : "Color scheme",
+    "default" : "scheme-1"
+
+},
+
+
+
+
+
+
+    {"type": "header",
+    "content" : "Padding"
+
+},
+   
+
+
+    {"type" : "range",
+    "id" : "padding_top",
+    "label" : "Top padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+},
+
+{"type" : "range",
+    "id" : "padding_bottom",
+    "label" : "Bottom padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+}
+
+
+
+
+
+
+
+    ],
+
+
+    "presets" : [
+
+        { "name": "Featured Collection prt"
+        
+        }
+    ]
+
+}
+
+{% endschema %}
+
+<script src="{{ 'featured-collection-slider.js' | asset_url }}" defer="defer"></script>
+
+/*    Script code can be added immediately after the end schema      */
+
+{% unless section.settings.quick_add == 'none' %}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+{% endunless %}
+
+
+
+
+<div class="color-{{ section.settings.color_scheme }} featured-collection featured-collection-{{ section.id }}
+    {% if section.settings.full_width %} 
+     featured-collection--full-width
+     {% endif %}">
+    
+    <div class="featured-collection__heading">
+        <h2>{{ section.settings.heading }}</h2>
+
+
+         {% if section.settings.show_description %}
+            <div class="featured-collection__description">
+                {{ section.settings.collection.description }}
+            </div>
+        {% elsif section.settings.description != blank %}
+            <div class="featured-collection__description">
+                {{ section.settings.description }}
+            </div>
+        {% endif %}
+
+
+
+
+
+
+
+
+
+
+    </div>
+    
+    
+
+
+
+
+
+
+
+
+
+    <slider-component>
+      <ul
+        class="featured-collection__grid
+      {% if section.settings.swipe_on_mobile %}
+        featured-collection__grid--swipe
+      {% endif %}
+       {% if section.settings.enable_desktop_slider %}
+      featured-collection__grid--slider-desktop
+      {% endif %} "
+        style="
+      --columns-desktop: {{ section.settings.columns_desktop }};
+      --columns-mobile: {{ section.settings.columns_mobile }}
+        "
+      >
+          {% for product in section.settings.collection.products  limit: section.settings.products_to_show  %}
+      
+          <li class="featured-collection__item">
+              {% render 'card-product',
+                 card_product: product,
+                  media_aspect_ratio: section.settings.image_ratio,
+                  image_shape: section.settings.image_shape,
+                  show_vendor: section.settings.show_vendor,
+                  show_rating: section.settings.show_rating,
+                  show_secondary_image: section.settings.show_secondary_image,
+                  quick_add: section.settings.quick_add
+      
+      %}
+          </li>
+          {% endfor %}
+      </ul>
+
+
+      /* slider button   */
+      {% if section.settings.enable_desktop_slider %}
+        <div class="featured-collection__slider-buttons">
+            <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--prev">
+                &larr;
+            </button>
+            <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--next">
+                &rarr;
+            </button>
+        </div>
+    {% endif %}
+
+
+
+
+
+    </slider-component>
+
+
+
+
+
+  {% if section.settings.show_view_all_button %}
+<div class="featured-collection__view-all">
+    <a href="{{ section.settings.collection.url }}" class="featured-collection__view-all-btn
+            featured-collection__view-all-btn--{{ section.settings.view_all_style }}">
+                    View all
+                </a>
+</div>
+
+ {% endif %}
+
+
+
+
+
+
+    
+</div>
+
+
+
+<style>
+
+ .featured-collection-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  /* section.id is unique per section instance. 
+  If you drag this section onto the page twice, each copy gets its own section.id 
+  (something like template--123__featured_collection), 
+  so .featured-collection-{{ section.id }} produces a different CSS class for each one. 
+  That's what lets two copies of the same section have different padding values without fighting each other.
+
+  */
+  
+.featured-collection--full-width {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.featured-collection__heading {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 40px;
+  }
+
+.featured-collection__description {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+  .featured-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns-mobile), 1fr);
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .featured-collection__grid--swipe {
+     grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - (var(--columns-mobile) - 1) * 20px) / var(--columns-mobile));
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .featured-collection__grid--swipe .featured-collection__item {
+    scroll-snap-align: start;
+
+}
+
+  @media screen and (min-width: 768px) {
+
+    .featured-collection__grid {
+        grid-template-columns: repeat(var(--columns-desktop), 1fr);
+    }
+
+
+     .featured-collection__grid--slider-desktop {
+        grid-template-columns: none;   /* <-- add this line */
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% - (var(--columns-desktop) - 1) * 20px) / var(--columns-desktop));
+        /* This math formula automatically calculates the exact width of a single column when using CSS Grid.
+        It ensures that no matter how many columns you want (var(--columns-desktop)), 
+        they will all fit perfectly onto one single row, leaving exactly 20px of space (gaps) between them, 
+        without stretching past 100% of the screen width. 
+
+
+        If you have 4 columns, you only have 3 gaps between them.
+        The math does: (4 - 1) * 20px → 3 * 20px = 60px.
+        Result: The total space needed just for the gaps is 60px.
+
+        Subtract the Gaps from the Total Width
+        100% - (60px)
+
+
+        The browser takes the full width available (100%) and 
+        subtracts the gap space (60px).
+        Result: You are left with the exact remaining space available only for the actual content blocks.
+        
+
+        (Remaining Space) / var(--columns-desktop)
+
+        Finally, the browser takes that remaining space and 
+        divides it cleanly by the number of columns (4).
+        Result: Every column gets the exact same pixel width down to the decimal point.
+
+
+        Why Use grid-auto-columns with this Math?
+        Normally, CSS Grid wraps items to the next line. 
+        However, in Shopify sections (like product carousels or sliders), 
+        developers use grid-auto-columns to force items to stay on one single horizontal line 
+        so users can swipe through them.
+        By using this specific formula, the browser ensures that exactly 4 items fit perfectly on the screen at once, 
+        and the 5th item sits just off-screen, waiting to be scrolled into view!
+
+        */
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+
+        /* scroll-snap-type: x mandatory        tells the browser "when the user stops scrolling, 
+        snap to a stopping point," and 
+        scroll-snap-align: start         on each item tells it "this element is a valid stopping point.
+        " No JavaScript needed for basic snap-scrolling — that's the whole trick. */
+
+        padding-bottom: 10px;
+    }
+
+
+     .featured-collection__grid--slider-desktop .featured-collection__item {
+        scroll-snap-align: start;
+    }
+
+
+
+    
+  }
+
+.featured-collection__view-all {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.featured-collection__view-all-btn--link {
+    text-decoration: underline;
+}
+
+.featured-collection__view-all-btn--outline {
+    display: inline-block;
+    padding: 10px 24px;
+    border: 1px solid black;
+}
+
+.featured-collection__view-all-btn--solid {
+    display: inline-block;
+    padding: 10px 24px;
+    background: black;
+    color: white;
+}
+
+
+
+
+.featured-collection__slider-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.featured-collection__slider-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+    background: white;
+    cursor: pointer;
+}
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %}
+12.
+All patterns we already know, plus one small new idea (else as a fallback). 
+These are the remaining heading and description controls from our reference.
+which are:
+- Change your heading setting from text to inline_richtext. 
+Keep the same id, so nothing else breaks. 
+It lets the merchant use bold or italic inside the heading.
+
+- Adding two select settings, right after our show_description checkbox:
+/*
+{"type" : "select",
+    "id" : "heading_size",
+    "label" : "Heading size",
+    "options" : [
+        { "value" : "h2", "label" : "Medium" },
+        { "value" : "h1", "label" : "Large" },
+        { "value" : "h0", "label" : "Extra large" }
+    ],
+    "default" : "h1"
+
+},
+
+{"type" : "select",
+    "id" : "description_style",
+    "label" : "Description style",
+    "options" : [
+        { "value" : "body", "label" : "Body" },
+        { "value" : "subtitle", "label" : "Subtitle" },
+        { "value" : "uppercase", "label" : "Uppercase" }
+    ],
+    "default" : "body"
+
+},
+
+*/
+
+3. Use them as classes in your heading area. 
+This is the same dynamic-class trick as view_all_style:
+<h2 class="{{ section.settings.heading_size }}">
+  {{ section.settings.heading }}</h2>
+
+For the description, add the style class to both description divs:
+<div class="featured-collection__description {{ section.settings.description_style }}">
+
+Dawn's own CSS already defines the classes h0, h1, h2, subtitle and uppercase, 
+so you don't need to write any new CSS for them.
+
+4. Add a fallback for when no collection is selected. 
+Right now, if the merchant hasn't picked a collection, your grid is just empty. 
+The reference handles this with {% else %}, 
+showing placeholder cards instead. Replace your for loop area with:
+
+{% endcomment %}
+
+
+
+
+
+{% schema %}
+
+{"name": "Featured Collection",
+    "settings": [
+
+       { "type": "inline_richtext",
+        "id" : "heading",
+        "label": "Heading",
+        "default": "Featured Collection"
+    
+    },
+
+
+     { "type": "richtext",
+        "id" : "description",
+        "label": "Description"
+        
+    },
+
+    { "type" : "checkbox",
+        "id" : "show_description",
+        "label" : "show collection own's description instead",
+        "default" : false
+    
+    
+    },
+
+
+
+
+
+    {"type" : "select",
+    "id" : "heading_size",
+    "label" : "Heading size",
+    "options" : [
+        { "value" : "h2", "label" : "Medium" },
+        { "value" : "h1", "label" : "Large" },
+        { "value" : "h0", "label" : "Extra large" }
+    ],
+    "default" : "h1"
+
+},
+
+{"type" : "select",
+    "id" : "description_style",
+    "label" : "Description style",
+    "options" : [
+        { "value" : "body", "label" : "Body" },
+        { "value" : "subtitle", "label" : "Subtitle" },
+        { "value" : "uppercase", "label" : "Uppercase" }
+    ],
+    "default" : "body"
+
+},
+
+
+
+
+
+
+
+    {"type": "header",
+     "content" : "Collection settings"
+
+     },
+
+
+
+
+
+    {"type": "collection",
+        "id" : "collection",
+        "label" : "Collection"
+    
+    },
+
+    { "type" :"checkbox",
+        "id" : "show_view_all_button",
+        "label" : "show view all button",
+        "default": false
+    },
+
+
+
+    {"type" : "select",
+        "id" :"view_all_style",
+        "label" :"View all button style",
+        "options" : [
+            { "value" : "link", 
+                "label" : "Link"
+             },
+
+
+            { "value" : "outline", 
+                "label" : "Outline button" 
+            },
+
+            { "value" : "solid",
+                 "label" : "Solid button" 
+                }
+
+        ],
+
+        "default" : "solid"
+
+    },
+    
+    
+
+       {"type": "header",
+        "content" : "Image settings"
+
+
+    },
+
+    {"type" : "range",
+        "id" : "products_to_show",
+        "label" : "Products to show",
+        "min" : 2,
+        "max" : 12,
+        "step" : 1,
+        "default" :4
+    
+    },
+
+
+    {"type" : "range",
+        "id" : "columns_desktop",
+        "label" : "Columns desktop",
+        "min" : 1,
+        "max" : 5,
+        "step" : 1,
+        "default" :3
+    
+    },
+
+
+    {"type" : "checkbox",
+    "id" : "enable_desktop_slider",
+    "label" : "Enable slider on desktop",
+    "default" : false
+
+},
+
+
+
+    { "type" : "select",
+        "id" : "image_ratio",
+        "label" :"image ratio",
+        "options": [
+            {"value" : "adapt",
+                "label" : "Adapt to change"
+            },
+
+            {"value" : "portrait",
+                "label" : "Portrait"
+            },
+
+            {"value" : "square",
+                "label" : "Square"
+            }
+        ],
+
+        "default" : "square"
+
+    
+    
+    },
+
+
+      { "type" : "select",
+        "id" : "image_shape",
+        "label" :"Image shape",
+        "options": [
+            {"value" : "default",
+                "label" : "Default"
+            },
+
+            {"value" : "round",
+                "label" : "Round"
+            },
+
+            {"value" : "blob",
+                "label" : "Blob"
+            }
+        ],
+
+        "default" : "default"
+
+    
+    
+    },
+
+    {"type" : "checkbox",
+        "id" : "show_vendor",
+        "label" : "Show Vendor",
+        "default" : false
+    
+    },
+
+       {"type" : "checkbox",
+        "id" : "show_rating",
+        "label" : "Show rating",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "show_secondary_image",
+        "label" : "Show second image on hover",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "full_width",
+        "label" : "Make section full width",
+        "default" : false
+
+    },
+
+
+     {"type" : "select",
+        "id" : "columns_mobile",
+        "label" : "Columns on mobile",
+        "options" : [
+            { "value" : "1", 
+                "label" : "1 column" 
+            
+            },
+
+            { "value" : "2", 
+                "label" : "2 columns" 
+            
+            }
+        ],
+
+        "default" : "2"
+
+    },
+
+     {"type" : "checkbox",
+        "id" : "swipe_on_mobile",
+        "label" : "Enable swipe on mobile",
+        "default" : false
+
+    },
+
+
+
+    {"type" : "select",
+    "id" : "quick_add",
+    "label" : "Quick add button",
+    "options" : [
+        { "value" : "none", 
+          "label" : "None" 
+        },
+
+        { "value" : "standard", 
+          "label" : "Standard" 
+        }
+    ],
+    "default" : "none"
+
+},
+
+
+{"type" : "color_scheme",
+    "id" : "color_scheme",
+    "label" : "Color scheme",
+    "default" : "scheme-1"
+
+},
+
+
+
+
+
+
+    {"type": "header",
+    "content" : "Padding"
+
+},
+   
+
+
+    {"type" : "range",
+    "id" : "padding_top",
+    "label" : "Top padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+},
+
+{"type" : "range",
+    "id" : "padding_bottom",
+    "label" : "Bottom padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+}
+
+
+
+
+
+
+
+    ],
+
+
+    "presets" : [
+
+        { "name": "Featured Collection prt"
+        
+        }
+    ]
+
+}
+
+{% endschema %}
+
+<script src="{{ 'featured-collection-slider.js' | asset_url }}" defer="defer"></script>
+
+{% comment %}    Script code can be added immediately after the end schema      {% endcomment %}
+
+{% unless section.settings.quick_add == 'none' %}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+{% endunless %}
+
+
+
+
+<div class="color-{{ section.settings.color_scheme }} featured-collection featured-collection-{{ section.id }}
+    {% if section.settings.full_width %} 
+     featured-collection--full-width
+     {% endif %}">
+    
+    <div class="featured-collection__heading">
+        <h2 class="inline-richtext {{ section.settings.heading_size }}">{{ section.settings.heading }}</h2>
+
+
+         {% if section.settings.show_description %}
+            <div class="featured-collection__description {{ section.settings.description_style }}">
+                {{ section.settings.collection.description }}
+            </div>
+        {% elsif section.settings.description != blank %}
+            <div class="featured-collection__description {{ section.settings.description_style }}">
+                {{ section.settings.description }}
+            </div>
+        {% endif %}
+
+
+
+
+
+
+
+
+
+
+    </div>
+    
+    
+
+
+
+
+
+
+
+
+
+    <slider-component>
+      <ul
+        class="featured-collection__grid
+      {% if section.settings.swipe_on_mobile %}
+        featured-collection__grid--swipe
+      {% endif %}
+       {% if section.settings.enable_desktop_slider %}
+      featured-collection__grid--slider-desktop
+      {% endif %} "
+        style="
+      --columns-desktop: {{ section.settings.columns_desktop }};
+      --columns-mobile: {{ section.settings.columns_mobile }}
+        "
+      >
+
+
+
+
+
+
+      {% if section.settings.collection.products.size > 0 %}
+
+    {% for product in section.settings.collection.products limit: section.settings.products_to_show %}
+        <li class="featured-collection__item">
+            {% render 'card-product',
+               card_product: product,
+                media_aspect_ratio: section.settings.image_ratio,
+                image_shape: section.settings.image_shape,
+                show_vendor: section.settings.show_vendor,
+                show_rating: section.settings.show_rating,
+                show_secondary_image: section.settings.show_secondary_image,
+                quick_add: section.settings.quick_add
+            %}
+        </li>
+    {% endfor %}
+
+{% else %}
+
+    {% for i in (1..section.settings.columns_desktop) %}
+        <li class="featured-collection__item">
+            {% render 'card-product',
+                media_aspect_ratio: section.settings.image_ratio,
+                image_shape: section.settings.image_shape,
+                placeholder_image: 'product-apparel-1'
+            %}
+        </li>
+    {% endfor %}
+
+{% endif %}
+
+
+
+{% comment %}
+
+.products.size > 0 asks "does this collection actually have products?"
+ It is false both when no collection is picked and when the picked collection is empty, 
+ so one check covers both cases.
+{% for i in (1..3) %} is a loop over a number range instead of a list. 
+It runs 1, 2, 3, so you get as many placeholders as you have desktop columns. 
+You never use i inside the loop here, which is fine. It's only there to repeat the block.
+placeholder_image: 'product-apparel-1' is a parameter that card-product understands. 
+With no card_product passed in, the snippet draws a built-in sample image instead. 
+This is also a nice way to test your grid layout without needing real products.
+
+{% endcomment %}
+
+
+
+
+
+
+
+
+
+
+      </ul>
+
+
+      {% comment %} slider button   {% endcomment %}
+      {% if section.settings.enable_desktop_slider %}
+        <div class="featured-collection__slider-buttons">
+            <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--prev">
+                &larr;
+            </button>
+            <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--next">
+                &rarr;
+            </button>
+        </div>
+    {% endif %}
+
+
+
+
+
+    </slider-component>
+
+
+
+
+
+  {% if section.settings.show_view_all_button %}
+<div class="featured-collection__view-all">
+    <a href="{{ section.settings.collection.url }}" class="featured-collection__view-all-btn
+            featured-collection__view-all-btn--{{ section.settings.view_all_style }}">
+                    View all
+                </a>
+</div>
+
+ {% endif %}
+
+
+
+
+
+
+    
+</div>
+
+
+
+<style>
+
+ .featured-collection-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  /* section.id is unique per section instance. 
+  If you drag this section onto the page twice, each copy gets its own section.id 
+  (something like template--123__featured_collection), 
+  so .featured-collection-{{ section.id }} produces a different CSS class for each one. 
+  That's what lets two copies of the same section have different padding values without fighting each other.
+
+  */
+  
+.featured-collection--full-width {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.featured-collection__heading {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 40px;
+  }
+
+.featured-collection__description {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+  .featured-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns-mobile), 1fr);
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .featured-collection__grid--swipe {
+     grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - (var(--columns-mobile) - 1) * 20px) / var(--columns-mobile));
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .featured-collection__grid--swipe .featured-collection__item {
+    scroll-snap-align: start;
+
+}
+
+  @media screen and (min-width: 768px) {
+
+    .featured-collection__grid {
+        grid-template-columns: repeat(var(--columns-desktop), 1fr);
+    }
+
+
+     .featured-collection__grid--slider-desktop {
+        grid-template-columns: none;   /* <-- add this line */
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% - (var(--columns-desktop) - 1) * 20px) / var(--columns-desktop));
+        /* This math formula automatically calculates the exact width of a single column when using CSS Grid.
+        It ensures that no matter how many columns you want (var(--columns-desktop)), 
+        they will all fit perfectly onto one single row, leaving exactly 20px of space (gaps) between them, 
+        without stretching past 100% of the screen width. 
+
+
+        If you have 4 columns, you only have 3 gaps between them.
+        The math does: (4 - 1) * 20px → 3 * 20px = 60px.
+        Result: The total space needed just for the gaps is 60px.
+
+        Subtract the Gaps from the Total Width
+        100% - (60px)
+
+
+        The browser takes the full width available (100%) and 
+        subtracts the gap space (60px).
+        Result: You are left with the exact remaining space available only for the actual content blocks.
+        
+
+        (Remaining Space) / var(--columns-desktop)
+
+        Finally, the browser takes that remaining space and 
+        divides it cleanly by the number of columns (4).
+        Result: Every column gets the exact same pixel width down to the decimal point.
+
+
+        Why Use grid-auto-columns with this Math?
+        Normally, CSS Grid wraps items to the next line. 
+        However, in Shopify sections (like product carousels or sliders), 
+        developers use grid-auto-columns to force items to stay on one single horizontal line 
+        so users can swipe through them.
+        By using this specific formula, the browser ensures that exactly 4 items fit perfectly on the screen at once, 
+        and the 5th item sits just off-screen, waiting to be scrolled into view!
+
+        */
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+
+        /* scroll-snap-type: x mandatory        tells the browser "when the user stops scrolling, 
+        snap to a stopping point," and 
+        scroll-snap-align: start         on each item tells it "this element is a valid stopping point.
+        " No JavaScript needed for basic snap-scrolling — that's the whole trick. */
+
+        padding-bottom: 10px;
+    }
+
+
+     .featured-collection__grid--slider-desktop .featured-collection__item {
+        scroll-snap-align: start;
+    }
+
+
+
+    
+  }
+
+.featured-collection__view-all {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.featured-collection__view-all-btn--link {
+    text-decoration: underline;
+}
+
+.featured-collection__view-all-btn--outline {
+    display: inline-block;
+    padding: 10px 24px;
+    border: 1px solid black;
+}
+
+.featured-collection__view-all-btn--solid {
+    display: inline-block;
+    padding: 10px 24px;
+    background: black;
+    color: white;
+}
+
+
+
+
+.featured-collection__slider-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.featured-collection__slider-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+    background: white;
+    cursor: pointer;
+}
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %}
+13.
+What you have now:
+{% if section.settings.show_view_all_button %}
+
+With the checkbox on, the button always appears, 
+even if the collection has 3 products and all 3 are already displayed.
+ In that case "View all" leads to a page showing exactly what the visitor already sees.
+
+we want to add a second condition:
+{% if section.settings.show_view_all_button and more_in_collection %}
+
+This means "show the button only if the checkbox is on and the collection 
+has more products than we're displaying." 
+Both must be true.
+
+more_in_collection means 
+"the checkbox is on and there are extra products.
+
+
+also
+2. Change the condition around your View all button (your setting id is show_view_all_button):
+{% if section.settings.show_view_all_button and more_in_collection %}
+
+
+
+
+{% endcomment %}
+
+
+
+
+
+{% schema %}
+
+{"name": "Featured Collection",
+    "settings": [
+
+       { "type": "inline_richtext",
+        "id" : "heading",
+        "label": "Heading",
+        "default": "Featured Collection"
+    
+    },
+
+
+     { "type": "richtext",
+        "id" : "description",
+        "label": "Description"
+        
+    },
+
+    { "type" : "checkbox",
+        "id" : "show_description",
+        "label" : "show collection own's description instead",
+        "default" : false
+    
+    
+    },
+
+
+
+
+
+    {"type" : "select",
+    "id" : "heading_size",
+    "label" : "Heading size",
+    "options" : [
+        { "value" : "h2", "label" : "Medium" },
+        { "value" : "h1", "label" : "Large" },
+        { "value" : "h0", "label" : "Extra large" }
+    ],
+    "default" : "h1"
+
+},
+
+{"type" : "select",
+    "id" : "description_style",
+    "label" : "Description style",
+    "options" : [
+        { "value" : "body", "label" : "Body" },
+        { "value" : "subtitle", "label" : "Subtitle" },
+        { "value" : "uppercase", "label" : "Uppercase" }
+    ],
+    "default" : "body"
+
+},
+
+
+
+
+
+
+
+    {"type": "header",
+     "content" : "Collection settings"
+
+     },
+
+
+
+
+
+    {"type": "collection",
+        "id" : "collection",
+        "label" : "Collection"
+    
+    },
+
+    { "type" :"checkbox",
+        "id" : "show_view_all_button",
+        "label" : "show view all button",
+        "default": false
+    },
+
+
+
+    {"type" : "select",
+        "id" :"view_all_style",
+        "label" :"View all button style",
+        "options" : [
+            { "value" : "link", 
+                "label" : "Link"
+             },
+
+
+            { "value" : "outline", 
+                "label" : "Outline button" 
+            },
+
+            { "value" : "solid",
+                 "label" : "Solid button" 
+                }
+
+        ],
+
+        "default" : "solid"
+
+    },
+    
+    
+
+       {"type": "header",
+        "content" : "Image settings"
+
+
+    },
+
+    {"type" : "range",
+        "id" : "products_to_show",
+        "label" : "Products to show",
+        "min" : 2,
+        "max" : 12,
+        "step" : 1,
+        "default" :4
+    
+    },
+
+
+    {"type" : "range",
+        "id" : "columns_desktop",
+        "label" : "Columns desktop",
+        "min" : 1,
+        "max" : 5,
+        "step" : 1,
+        "default" :3
+    
+    },
+
+
+    {"type" : "checkbox",
+    "id" : "enable_desktop_slider",
+    "label" : "Enable slider on desktop",
+    "default" : false
+
+},
+
+
+
+    { "type" : "select",
+        "id" : "image_ratio",
+        "label" :"image ratio",
+        "options": [
+            {"value" : "adapt",
+                "label" : "Adapt to change"
+            },
+
+            {"value" : "portrait",
+                "label" : "Portrait"
+            },
+
+            {"value" : "square",
+                "label" : "Square"
+            }
+        ],
+
+        "default" : "square"
+
+    
+    
+    },
+
+
+      { "type" : "select",
+        "id" : "image_shape",
+        "label" :"Image shape",
+        "options": [
+            {"value" : "default",
+                "label" : "Default"
+            },
+
+            {"value" : "round",
+                "label" : "Round"
+            },
+
+            {"value" : "blob",
+                "label" : "Blob"
+            }
+        ],
+
+        "default" : "default"
+
+    
+    
+    },
+
+    {"type" : "checkbox",
+        "id" : "show_vendor",
+        "label" : "Show Vendor",
+        "default" : false
+    
+    },
+
+       {"type" : "checkbox",
+        "id" : "show_rating",
+        "label" : "Show rating",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "show_secondary_image",
+        "label" : "Show second image on hover",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "full_width",
+        "label" : "Make section full width",
+        "default" : false
+
+    },
+
+
+     {"type" : "select",
+        "id" : "columns_mobile",
+        "label" : "Columns on mobile",
+        "options" : [
+            { "value" : "1", 
+                "label" : "1 column" 
+            
+            },
+
+            { "value" : "2", 
+                "label" : "2 columns" 
+            
+            }
+        ],
+
+        "default" : "2"
+
+    },
+
+     {"type" : "checkbox",
+        "id" : "swipe_on_mobile",
+        "label" : "Enable swipe on mobile",
+        "default" : false
+
+    },
+
+
+
+    {"type" : "select",
+    "id" : "quick_add",
+    "label" : "Quick add button",
+    "options" : [
+        { "value" : "none", 
+          "label" : "None" 
+        },
+
+        { "value" : "standard", 
+          "label" : "Standard" 
+        }
+    ],
+    "default" : "none"
+
+},
+
+
+{"type" : "color_scheme",
+    "id" : "color_scheme",
+    "label" : "Color scheme",
+    "default" : "scheme-1"
+
+},
+
+
+
+
+
+
+    {"type": "header",
+    "content" : "Padding"
+
+},
+   
+
+
+    {"type" : "range",
+    "id" : "padding_top",
+    "label" : "Top padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+},
+
+{"type" : "range",
+    "id" : "padding_bottom",
+    "label" : "Bottom padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+}
+
+
+
+
+
+
+
+    ],
+
+
+    "presets" : [
+
+        { "name": "Featured Collection prt"
+        
+        }
+    ]
+
+}
+
+{% endschema %}
+
+<script src="{{ 'featured-collection-slider.js' | asset_url }}" defer="defer"></script>
+
+{% comment %}    Script code can be added immediately after the end schema      {% endcomment %}
+
+{% unless section.settings.quick_add == 'none' %}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+{% endunless %}
+
+
+
+
+
+{% comment %}    Add this block right after the your script      {% endcomment %}
+
+{%- liquid
+  assign products_to_display = section.settings.collection.all_products_count
+
+  if section.settings.collection.all_products_count > section.settings.products_to_show
+    assign products_to_display = section.settings.products_to_show
+    assign more_in_collection = true
+  endif
+-%}
+
+
+
+
+
+<div class="color-{{ section.settings.color_scheme }} featured-collection featured-collection-{{ section.id }}
+    {% if section.settings.full_width %} 
+     featured-collection--full-width
+     {% endif %}">
+    
+    <div class="featured-collection__heading">
+        <h2 class="inline-richtext {{ section.settings.heading_size }}">{{ section.settings.heading }}</h2>
+
+
+         {% if section.settings.show_description %}
+            <div class="featured-collection__description {{ section.settings.description_style }}">
+                {{ section.settings.collection.description }}
+            </div>
+        {% elsif section.settings.description != blank %}
+            <div class="featured-collection__description {{ section.settings.description_style }}">
+                {{ section.settings.description }}
+            </div>
+        {% endif %}
+
+
+
+
+
+
+
+
+
+
+    </div>
+    
+    
+
+
+
+
+
+
+
+
+
+    <featured-slider>
+      <ul
+        class="featured-collection__grid
+      {% if section.settings.swipe_on_mobile %}
+        featured-collection__grid--swipe
+      {% endif %}
+       {% if section.settings.enable_desktop_slider %}
+      featured-collection__grid--slider-desktop
+      {% endif %} "
+        style="
+      --columns-desktop: {{ section.settings.columns_desktop }};
+      --columns-mobile: {{ section.settings.columns_mobile }}
+        "
+      >
+
+
+
+
+
+
+      {% if section.settings.collection.products.size > 0 %}
+
+    {% for product in section.settings.collection.products limit: section.settings.products_to_show %}
+        <li class="featured-collection__item">
+            {% render 'card-product',
+               card_product: product,
+                media_aspect_ratio: section.settings.image_ratio,
+                image_shape: section.settings.image_shape,
+                show_vendor: section.settings.show_vendor,
+                show_rating: section.settings.show_rating,
+                show_secondary_image: section.settings.show_secondary_image,
+                quick_add: section.settings.quick_add
+            %}
+        </li>
+    {% endfor %}
+
+{% else %}
+
+    {% for i in (1..section.settings.columns_desktop) %}
+        <li class="featured-collection__item">
+            {% render 'card-product',
+                media_aspect_ratio: section.settings.image_ratio,
+                image_shape: section.settings.image_shape,
+                placeholder_image: 'product-apparel-1'
+            %}
+        </li>
+    {% endfor %}
+
+{% endif %}
+
+
+
+{% comment %}
+
+.products.size > 0 asks "does this collection actually have products?"
+ It is false both when no collection is picked and when the picked collection is empty, 
+ so one check covers both cases.
+{% for i in (1..3) %} is a loop over a number range instead of a list. 
+It runs 1, 2, 3, so you get as many placeholders as you have desktop columns. 
+You never use i inside the loop here, which is fine. It's only there to repeat the block.
+placeholder_image: 'product-apparel-1' is a parameter that card-product understands. 
+With no card_product passed in, the snippet draws a built-in sample image instead. 
+This is also a nice way to test your grid layout without needing real products.
+
+{% endcomment %}
+
+
+
+
+
+
+
+
+
+
+      </ul>
+
+
+      {% comment %} slider button and counter  {% endcomment %}
+      {% if section.settings.enable_desktop_slider %}
+    <div class="featured-collection__slider-buttons">
+        <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--prev">
+            &larr;
+        </button>
+
+        <div class="featured-collection__slider-counter">
+            <span class="featured-collection__counter-current">1</span>
+            <span> / </span>
+            <span class="featured-collection__counter-total">{{ products_to_display }}</span>
+        </div>
+
+        <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--next">
+            &rarr;
+        </button>
+    </div>
+{% endif %}
+
+
+
+
+
+    </featured-slider>
+
+
+
+
+
+  {% if section.settings.show_view_all_button and more_in_collection %}
+<div class="featured-collection__view-all">
+    <a href="{{ section.settings.collection.url }}" class="featured-collection__view-all-btn
+            featured-collection__view-all-btn--{{ section.settings.view_all_style }}">
+                    View all
+                </a>
+</div>
+
+ {% endif %}
+
+
+
+
+
+
+    
+</div>
+
+
+
+<style>
+
+ .featured-collection-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  /* section.id is unique per section instance. 
+  If you drag this section onto the page twice, each copy gets its own section.id 
+  (something like template--123__featured_collection), 
+  so .featured-collection-{{ section.id }} produces a different CSS class for each one. 
+  That's what lets two copies of the same section have different padding values without fighting each other.
+
+  */
+  
+.featured-collection--full-width {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.featured-collection__heading {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 40px;
+  }
+
+.featured-collection__description {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+  .featured-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns-mobile), 1fr);
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .featured-collection__grid--swipe {
+     grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - (var(--columns-mobile) - 1) * 20px) / var(--columns-mobile));
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .featured-collection__grid--swipe .featured-collection__item {
+    scroll-snap-align: start;
+
+}
+
+  @media screen and (min-width: 768px) {
+
+    .featured-collection__grid {
+        grid-template-columns: repeat(var(--columns-desktop), 1fr);
+    }
+
+
+     .featured-collection__grid--slider-desktop {
+        grid-template-columns: none;   /* <-- add this line */
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% - (var(--columns-desktop) - 1) * 20px) / var(--columns-desktop));
+        /* This math formula automatically calculates the exact width of a single column when using CSS Grid.
+        It ensures that no matter how many columns you want (var(--columns-desktop)), 
+        they will all fit perfectly onto one single row, leaving exactly 20px of space (gaps) between them, 
+        without stretching past 100% of the screen width. 
+
+
+        If you have 4 columns, you only have 3 gaps between them.
+        The math does: (4 - 1) * 20px → 3 * 20px = 60px.
+        Result: The total space needed just for the gaps is 60px.
+
+        Subtract the Gaps from the Total Width
+        100% - (60px)
+
+
+        The browser takes the full width available (100%) and 
+        subtracts the gap space (60px).
+        Result: You are left with the exact remaining space available only for the actual content blocks.
+        
+
+        (Remaining Space) / var(--columns-desktop)
+
+        Finally, the browser takes that remaining space and 
+        divides it cleanly by the number of columns (4).
+        Result: Every column gets the exact same pixel width down to the decimal point.
+
+
+        Why Use grid-auto-columns with this Math?
+        Normally, CSS Grid wraps items to the next line. 
+        However, in Shopify sections (like product carousels or sliders), 
+        developers use grid-auto-columns to force items to stay on one single horizontal line 
+        so users can swipe through them.
+        By using this specific formula, the browser ensures that exactly 4 items fit perfectly on the screen at once, 
+        and the 5th item sits just off-screen, waiting to be scrolled into view!
+
+        */
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+
+        /* scroll-snap-type: x mandatory        tells the browser "when the user stops scrolling, 
+        snap to a stopping point," and 
+        scroll-snap-align: start         on each item tells it "this element is a valid stopping point.
+        " No JavaScript needed for basic snap-scrolling — that's the whole trick. */
+
+        padding-bottom: 10px;
+    }
+
+
+     .featured-collection__grid--slider-desktop .featured-collection__item {
+        scroll-snap-align: start;
+    }
+
+
+
+    
+  }
+
+.featured-collection__view-all {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.featured-collection__view-all-btn--link {
+    text-decoration: underline;
+}
+
+.featured-collection__view-all-btn--outline {
+    display: inline-block;
+    padding: 10px 24px;
+    border: 1px solid black;
+}
+
+.featured-collection__view-all-btn--solid {
+    display: inline-block;
+    padding: 10px 24px;
+    background: black;
+    color: white;
+}
+
+
+
+
+.featured-collection__slider-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.featured-collection__slider-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+    background: white;
+    cursor: pointer;
+}
+
+
+
+
+counter number styling
+
+.featured-collection__slider-buttons {
+    align-items: center;
+}
+
+.featured-collection__slider-counter {
+    min-width: 50px;
+    text-align: center;
+}
+
+
+
+
+
+
+
+to customize the scroll bar 
+
+.featured-collection__grid--slider-desktop::-webkit-scrollbar,
+.featured-collection__grid--swipe::-webkit-scrollbar {
+    height: 8px;
+}
+
+.featured-collection__grid--slider-desktop::-webkit-scrollbar-track,
+.featured-collection__grid--swipe::-webkit-scrollbar-track {
+    background: #eeeeee;
+    border-radius: 10px;
+}
+
+.featured-collection__grid--slider-desktop::-webkit-scrollbar-thumb,
+.featured-collection__grid--swipe::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 10px;
+}
+
+
+
+</style>
+
+{% comment %}
+  Yes, using Dawn's global `slider-component` is a good choice for now. 
+  It's less code for you to write, 
+  it's the pattern the reference uses, and it gives you the counter and the disabled-at-the-start buttons for free.
+
+**Should you touch `global.js`? No, just read it.**
+- Almost every section on your site depends on it. 
+One typo can break the menu, cart, variant picker and more, all at once.
+- Theme updates can overwrite it, so your edits would get lost.
+- If you want different behavior, 
+do what you just did (instead of using `slider-component` you used 'featured-slider' and create your
+own custom JS file in the asset folder): 
+write your own custom element in a separate file with a unique name.
+
+
+**What's usually inside Dawn's `global.js`.
+** I'm going from memory of Dawn, and versions differ, 
+so use `Ctrl+F` on your own file to confirm each one.
+
+1. **`slider-component`**: the horizontal sliders (like your featured collection), with prev/next buttons and the "1 / 4" counter.
+2. **`slideshow-component`**: the big banner slideshow, with autoplay and pause.
+3. **`quantity-input`**: the plus/minus buttons on quantity fields.
+4. **`menu-drawer` and `header-drawer`**: the mobile hamburger menu that slides in.
+5. **`modal-dialog` and `modal-opener`**: popups, like the ones that open when you click something.
+6. **`deferred-media`**: videos and 3D models that only load when clicked.
+7. **`variant-selects` and `variant-radios`**: the size/color pickers on product pages that update price and images.
+8. **`product-recommendations`**: loads the "You may also like" products after the page loads.
+9. **`bulk-add` and `bulk-modal`**: the bulk quantity features (related to `quick_add: bulk`).
+10. **Helper functions, not tags**: `trapFocus`, `removeTrapFocus`, `debounce`, `fetchConfig` and `getFocusableElements`. These are used by the components above for keyboard accessibility and network requests.
+
+Some things you might expect there are usually in their own files:
+`cart.js`, `product-form.js`, `quick-add.js`, `predictive-search.js` and `animations.js`.
+
+**What to read in it.
+** Find the `SliderComponent` class and note what it searches for. 
+In Dawn it's roughly:
+- the list: `[id^="Slider-"]`
+- the slides: `[id^="Slide-"]`
+- the buttons: `button[name="previous"]` and `button[name="next"]`
+- the counter: `.slider-counter--current` and `.slider-counter--total`
+
+Those are the labels your HTML must use for the global slider to work. 
+If they match what you see, we can convert your section to use it. 
+
+
+
+
+global.js runs on every page automatically,
+So Loading it again using script would cause a bug.
+
+If your section also included global.js, 
+the browser would try to run it a second time and 
+register every custom element twice. 
+You'd get errors like 'slider-component' has already been used with this registry, 
+and other parts of the site (menu, cart, variant picker) could misbehave.
+
+What you do need to load in your section is the slider's CSS. 
+In the reference, that's this line at the top:
+
+liquid
+{{ 'component-slider.css' | asset_url | stylesheet_tag }}
+
+The global slider's layout styles live there, and global.js doesn't include them.
+
+
+
+So if you convert your section to use the global slider, you would:
+
+Delete your <script src="...featured-slider.js..."> line
+Add the component-slider.css line
+Change your HTML labels to match what SliderComponent looks for 
+(Slider- ids, Slide- ids, previous/next button names)
+Remove your own slider CSS and JS
+
+
+
+
+
+
+{% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %}
+14.
+Now we are going to add: 
+scroll animations. Elements fade and slide in as the visitor scrolls down to them.
+
+This one is different from everything so far, because there is no new schema setting. 
+The reference uses settings.animations_reveal_on_scroll, 
+which is settings, not section.settings
+
+It's a global theme setting (Theme settings → Animations), 
+shared by every section, 
+so the merchant turns it on once for the whole store. Your section only reads it.
+
+You need to:
+1. Add the animation classes to your heading and description. 
+Use the same {% if %} inside a class attribute that you already use for full_width:
+
+2. Add the cascade effect to each product <li>. 
+This makes the cards appear one after another instead of all at once:
+
+3. Add it to the View all wrapper:
+
+
+
+
+
+<div class="featured-collection__view-all 
+{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in {% endif %}">
+
+We have a base class, featured-collection__view-all. 
+If the "Reveal sections on scroll" animation is selected in the theme settings, 
+the scroll-trigger and animate--slide-in classes will automatically activate.
+Both of these are global Shopify Dawn classes found in assets/component-animations.css:
+
+.scroll-trigger: This class prepares the HTML element to be animated. 
+It acts as the starting point, hiding the element by forcing its opacity to 0 
+so it is invisible when the page first loads.
+
+.animate--slide-in: This defines how the element moves. 
+It writes a CSS @keyframes instruction that tells the element to start a few pixels lower down the page 
+and slowly drift upwards into its final position.
+
+
+
+
+{% endcomment %}
+
+
+
+
+
+{% schema %}
+
+{"name": "Featured Collection",
+    "settings": [
+
+       { "type": "inline_richtext",
+        "id" : "heading",
+        "label": "Heading",
+        "default": "Featured Collection"
+    
+    },
+
+
+     { "type": "richtext",
+        "id" : "description",
+        "label": "Description"
+        
+    },
+
+    { "type" : "checkbox",
+        "id" : "show_description",
+        "label" : "show collection own's description instead",
+        "default" : false
+    
+    
+    },
+
+
+
+
+
+    {"type" : "select",
+    "id" : "heading_size",
+    "label" : "Heading size",
+    "options" : [
+        { "value" : "h2", "label" : "Medium" },
+        { "value" : "h1", "label" : "Large" },
+        { "value" : "h0", "label" : "Extra large" }
+    ],
+    "default" : "h1"
+
+},
+
+{"type" : "select",
+    "id" : "description_style",
+    "label" : "Description style",
+    "options" : [
+        { "value" : "body", "label" : "Body" },
+        { "value" : "subtitle", "label" : "Subtitle" },
+        { "value" : "uppercase", "label" : "Uppercase" }
+    ],
+    "default" : "body"
+
+},
+
+
+
+
+
+
+
+    {"type": "header",
+     "content" : "Collection settings"
+
+     },
+
+
+
+
+
+    {"type": "collection",
+        "id" : "collection",
+        "label" : "Collection"
+    
+    },
+
+    { "type" :"checkbox",
+        "id" : "show_view_all_button",
+        "label" : "show view all button",
+        "default": false
+    },
+
+
+
+    {"type" : "select",
+        "id" :"view_all_style",
+        "label" :"View all button style",
+        "options" : [
+            { "value" : "link", 
+                "label" : "Link"
+             },
+
+
+            { "value" : "outline", 
+                "label" : "Outline button" 
+            },
+
+            { "value" : "solid",
+                 "label" : "Solid button" 
+                }
+
+        ],
+
+        "default" : "solid"
+
+    },
+    
+    
+
+       {"type": "header",
+        "content" : "Image settings"
+
+
+    },
+
+    {"type" : "range",
+        "id" : "products_to_show",
+        "label" : "Products to show",
+        "min" : 2,
+        "max" : 12,
+        "step" : 1,
+        "default" :4
+    
+    },
+
+
+    {"type" : "range",
+        "id" : "columns_desktop",
+        "label" : "Columns desktop",
+        "min" : 1,
+        "max" : 5,
+        "step" : 1,
+        "default" :3
+    
+    },
+
+
+    {"type" : "checkbox",
+    "id" : "enable_desktop_slider",
+    "label" : "Enable slider on desktop",
+    "default" : false
+
+},
+
+
+
+    { "type" : "select",
+        "id" : "image_ratio",
+        "label" :"image ratio",
+        "options": [
+            {"value" : "adapt",
+                "label" : "Adapt to change"
+            },
+
+            {"value" : "portrait",
+                "label" : "Portrait"
+            },
+
+            {"value" : "square",
+                "label" : "Square"
+            }
+        ],
+
+        "default" : "square"
+
+    
+    
+    },
+
+
+      { "type" : "select",
+        "id" : "image_shape",
+        "label" :"Image shape",
+        "options": [
+            {"value" : "default",
+                "label" : "Default"
+            },
+
+            {"value" : "round",
+                "label" : "Round"
+            },
+
+            {"value" : "blob",
+                "label" : "Blob"
+            }
+        ],
+
+        "default" : "default"
+
+    
+    
+    },
+
+    {"type" : "checkbox",
+        "id" : "show_vendor",
+        "label" : "Show Vendor",
+        "default" : false
+    
+    },
+
+       {"type" : "checkbox",
+        "id" : "show_rating",
+        "label" : "Show rating",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "show_secondary_image",
+        "label" : "Show second image on hover",
+        "default" : false
+
+    },
+
+      {"type" : "checkbox",
+        "id" : "full_width",
+        "label" : "Make section full width",
+        "default" : false
+
+    },
+
+
+     {"type" : "select",
+        "id" : "columns_mobile",
+        "label" : "Columns on mobile",
+        "options" : [
+            { "value" : "1", 
+                "label" : "1 column" 
+            
+            },
+
+            { "value" : "2", 
+                "label" : "2 columns" 
+            
+            }
+        ],
+
+        "default" : "2"
+
+    },
+
+     {"type" : "checkbox",
+        "id" : "swipe_on_mobile",
+        "label" : "Enable swipe on mobile",
+        "default" : false
+
+    },
+
+
+
+    {"type" : "select",
+    "id" : "quick_add",
+    "label" : "Quick add button",
+    "options" : [
+        { "value" : "none", 
+          "label" : "None" 
+        },
+
+        { "value" : "standard", 
+          "label" : "Standard" 
+        }
+    ],
+    "default" : "none"
+
+},
+
+
+{"type" : "color_scheme",
+    "id" : "color_scheme",
+    "label" : "Color scheme",
+    "default" : "scheme-1"
+
+},
+
+
+
+
+
+
+    {"type": "header",
+    "content" : "Padding"
+
+},
+   
+
+
+    {"type" : "range",
+    "id" : "padding_top",
+    "label" : "Top padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+},
+
+{"type" : "range",
+    "id" : "padding_bottom",
+    "label" : "Bottom padding",
+    "min" : 0,
+    "max" : 100,
+    "step" : 4,
+    "unit" : "px",
+    "default" : 36
+
+}
+
+
+
+
+
+
+
+    ],
+
+
+    "presets" : [
+
+        { "name": "Featured Collection prt"
+        
+        }
+    ]
+
+}
+
+{% endschema %}
+
+<script src="{{ 'featured-collection-slider.js' | asset_url }}" defer="defer"></script>
+
+{% comment %}    Script code can be added immediately after the end schema      {% endcomment %}
+
+{% unless section.settings.quick_add == 'none' %}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+{% endunless %}
+
+
+
+
+
+{% comment %}    Add this block right after the your script      {% endcomment %}
+
+{%- liquid
+  assign products_to_display = section.settings.collection.all_products_count
+
+  if section.settings.collection.all_products_count > section.settings.products_to_show
+    assign products_to_display = section.settings.products_to_show
+    assign more_in_collection = true
+  endif
+-%}
+
+
+
+
+
+<div class="color-{{ section.settings.color_scheme }} featured-collection featured-collection-{{ section.id }}
+    {% if section.settings.full_width %} 
+     featured-collection--full-width
+     {% endif %}">
+    
+    <div class="featured-collection__heading">
+
+   
+        <h2 class="inline-richtext {{ section.settings.heading_size }} 
+          
+          {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in
+           {% endif %}">
+           {{ section.settings.heading }}</h2>
+
+
+         {% if section.settings.show_description %}
+            <div class="featured-collection__description {{ section.settings.description_style }}
+              {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in
+           {% endif %}">
+                {{ section.settings.collection.description }}
+            </div>
+        {% elsif section.settings.description != blank %}
+            <div class="featured-collection__description {{ section.settings.description_style }}">
+                {{ section.settings.description }}
+            </div>
+        {% endif %}
+
+
+
+
+
+
+
+
+
+
+    </div>
+    
+    
+
+
+
+
+
+
+
+
+
+    <featured-slider>
+      <ul
+        class="featured-collection__grid
+      {% if section.settings.swipe_on_mobile %}
+        featured-collection__grid--swipe
+      {% endif %}
+       {% if section.settings.enable_desktop_slider %}
+      featured-collection__grid--slider-desktop
+      {% endif %} "
+        style="
+      --columns-desktop: {{ section.settings.columns_desktop }};
+      --columns-mobile: {{ section.settings.columns_mobile }}
+        "
+      >
+
+
+
+
+
+
+      {% if section.settings.collection.products.size > 0 %}
+
+    {% for product in section.settings.collection.products limit: section.settings.products_to_show %}
+        <li class="featured-collection__item 
+          {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in
+           {% endif %}"
+
+           {% if settings.animations_reveal_on_scroll %}
+        data-cascade
+        style="--animation-order: {{ forloop.index }};"
+    {% endif %}
+          
+          >
+            {% render 'card-product',
+               card_product: product,
+                media_aspect_ratio: section.settings.image_ratio,
+                image_shape: section.settings.image_shape,
+                show_vendor: section.settings.show_vendor,
+                show_rating: section.settings.show_rating,
+                show_secondary_image: section.settings.show_secondary_image,
+                quick_add: section.settings.quick_add
+            %}
+        </li>
+    {% endfor %}
+
+{% else %}
+
+    {% for i in (1..section.settings.columns_desktop) %}
+        <li class="featured-collection__item">
+            {% render 'card-product',
+                media_aspect_ratio: section.settings.image_ratio,
+                image_shape: section.settings.image_shape,
+                placeholder_image: 'product-apparel-1'
+            %}
+        </li>
+    {% endfor %}
+
+{% endif %}
+
+
+
+{% comment %}
+
+.products.size > 0 asks "does this collection actually have products?"
+ It is false both when no collection is picked and when the picked collection is empty, 
+ so one check covers both cases.
+{% for i in (1..3) %} is a loop over a number range instead of a list. 
+It runs 1, 2, 3, so you get as many placeholders as you have desktop columns. 
+You never use i inside the loop here, which is fine. It's only there to repeat the block.
+placeholder_image: 'product-apparel-1' is a parameter that card-product understands. 
+With no card_product passed in, the snippet draws a built-in sample image instead. 
+This is also a nice way to test your grid layout without needing real products.
+
+{% endcomment %}
+
+
+
+
+
+
+
+
+
+
+      </ul>
+
+
+      {% comment %} slider button and counter  {% endcomment %}
+      {% if section.settings.enable_desktop_slider %}
+    <div class="featured-collection__slider-buttons">
+        <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--prev">
+            &larr;
+        </button>
+
+        <div class="featured-collection__slider-counter">
+            <span class="featured-collection__counter-current">1</span>
+            <span> / </span>
+            <span class="featured-collection__counter-total">{{ products_to_display }}</span>
+        </div>
+
+        <button type="button" class="featured-collection__slider-btn featured-collection__slider-btn--next">
+            &rarr;
+        </button>
+    </div>
+{% endif %}
+
+
+
+
+
+    </featured-slider>
+
+
+
+
+
+  {% if section.settings.show_view_all_button and more_in_collection %}
+<div class="featured-collection__view-all {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in
+           {% endif %}">
+    <a href="{{ section.settings.collection.url }}" class="featured-collection__view-all-btn
+            featured-collection__view-all-btn--{{ section.settings.view_all_style }}">
+                    View all
+                </a>
+</div>
+
+ {% endif %}
+
+
+
+
+
+
+    
+</div>
+
+
+
+<style>
+
+ .featured-collection-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  /* section.id is unique per section instance. 
+  If you drag this section onto the page twice, each copy gets its own section.id 
+  (something like template--123__featured_collection), 
+  so .featured-collection-{{ section.id }} produces a different CSS class for each one. 
+  That's what lets two copies of the same section have different padding values without fighting each other.
+
+  */
+  
+.featured-collection--full-width {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.featured-collection__heading {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 40px;
+  }
+
+.featured-collection__description {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+  .featured-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns-mobile), 1fr);
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .featured-collection__grid--swipe {
+     grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - (var(--columns-mobile) - 1) * 20px) / var(--columns-mobile));
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .featured-collection__grid--swipe .featured-collection__item {
+    scroll-snap-align: start;
+
+}
+
+  @media screen and (min-width: 768px) {
+
+    .featured-collection__grid {
+        grid-template-columns: repeat(var(--columns-desktop), 1fr);
+    }
+
+
+     .featured-collection__grid--slider-desktop {
+        grid-template-columns: none;   /* <-- add this line */
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% - (var(--columns-desktop) - 1) * 20px) / var(--columns-desktop));
+        /* This math formula automatically calculates the exact width of a single column when using CSS Grid.
+        It ensures that no matter how many columns you want (var(--columns-desktop)), 
+        they will all fit perfectly onto one single row, leaving exactly 20px of space (gaps) between them, 
+        without stretching past 100% of the screen width. 
+
+
+        If you have 4 columns, you only have 3 gaps between them.
+        The math does: (4 - 1) * 20px → 3 * 20px = 60px.
+        Result: The total space needed just for the gaps is 60px.
+
+        Subtract the Gaps from the Total Width
+        100% - (60px)
+
+
+        The browser takes the full width available (100%) and 
+        subtracts the gap space (60px).
+        Result: You are left with the exact remaining space available only for the actual content blocks.
+        
+
+        (Remaining Space) / var(--columns-desktop)
+
+        Finally, the browser takes that remaining space and 
+        divides it cleanly by the number of columns (4).
+        Result: Every column gets the exact same pixel width down to the decimal point.
+
+
+        Why Use grid-auto-columns with this Math?
+        Normally, CSS Grid wraps items to the next line. 
+        However, in Shopify sections (like product carousels or sliders), 
+        developers use grid-auto-columns to force items to stay on one single horizontal line 
+        so users can swipe through them.
+        By using this specific formula, the browser ensures that exactly 4 items fit perfectly on the screen at once, 
+        and the 5th item sits just off-screen, waiting to be scrolled into view!
+
+        */
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+
+        /* scroll-snap-type: x mandatory        tells the browser "when the user stops scrolling, 
+        snap to a stopping point," and 
+        scroll-snap-align: start         on each item tells it "this element is a valid stopping point.
+        " No JavaScript needed for basic snap-scrolling — that's the whole trick. */
+
+        padding-bottom: 10px;
+    }
+
+
+     .featured-collection__grid--slider-desktop .featured-collection__item {
+        scroll-snap-align: start;
+    }
+
+
+
+    
+  }
+
+.featured-collection__view-all {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.featured-collection__view-all-btn--link {
+    text-decoration: underline;
+}
+
+.featured-collection__view-all-btn--outline {
+    display: inline-block;
+    padding: 10px 24px;
+    border: 1px solid black;
+}
+
+.featured-collection__view-all-btn--solid {
+    display: inline-block;
+    padding: 10px 24px;
+    background: black;
+    color: white;
+}
+
+
+
+
+.featured-collection__slider-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.featured-collection__slider-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+    background: white;
+    cursor: pointer;
+}
+
+
+
+
+counter number styling
+
+.featured-collection__slider-buttons {
+    align-items: center;
+}
+
+.featured-collection__slider-counter {
+    min-width: 50px;
+    text-align: center;
+}
+
+
+
+
+
+
+
+to customize the scroll bar 
+
+.featured-collection__grid--slider-desktop::-webkit-scrollbar,
+.featured-collection__grid--swipe::-webkit-scrollbar {
+    height: 8px;
+}
+
+.featured-collection__grid--slider-desktop::-webkit-scrollbar-track,
+.featured-collection__grid--swipe::-webkit-scrollbar-track {
+    background: #eeeeee;
+    border-radius: 10px;
+}
+
+.featured-collection__grid--slider-desktop::-webkit-scrollbar-thumb,
+.featured-collection__grid--swipe::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 10px;
+}
+
+
+
+</style>
+
+{% comment %}
+  Yes, using Dawn's global `slider-component` is a good choice for now. 
+  It's less code for you to write, 
+  it's the pattern the reference uses, and it gives you the counter and the disabled-at-the-start buttons for free.
+
+**Should you touch `global.js`? No, just read it.**
+- Almost every section on your site depends on it. 
+One typo can break the menu, cart, variant picker and more, all at once.
+- Theme updates can overwrite it, so your edits would get lost.
+- If you want different behavior, 
+do what you just did (instead of using `slider-component` you used 'featured-slider' and create your
+own custom JS file in the asset folder): 
+write your own custom element in a separate file with a unique name.
+
+
+**What's usually inside Dawn's `global.js`.
+** I'm going from memory of Dawn, and versions differ, 
+so use `Ctrl+F` on your own file to confirm each one.
+
+1. **`slider-component`**: the horizontal sliders (like your featured collection), with prev/next buttons and the "1 / 4" counter.
+2. **`slideshow-component`**: the big banner slideshow, with autoplay and pause.
+3. **`quantity-input`**: the plus/minus buttons on quantity fields.
+4. **`menu-drawer` and `header-drawer`**: the mobile hamburger menu that slides in.
+5. **`modal-dialog` and `modal-opener`**: popups, like the ones that open when you click something.
+6. **`deferred-media`**: videos and 3D models that only load when clicked.
+7. **`variant-selects` and `variant-radios`**: the size/color pickers on product pages that update price and images.
+8. **`product-recommendations`**: loads the "You may also like" products after the page loads.
+9. **`bulk-add` and `bulk-modal`**: the bulk quantity features (related to `quick_add: bulk`).
+10. **Helper functions, not tags**: `trapFocus`, `removeTrapFocus`, `debounce`, `fetchConfig` and `getFocusableElements`. These are used by the components above for keyboard accessibility and network requests.
+
+Some things you might expect there are usually in their own files:
+`cart.js`, `product-form.js`, `quick-add.js`, `predictive-search.js` and `animations.js`.
+
+**What to read in it.
+** Find the `SliderComponent` class and note what it searches for. 
+In Dawn it's roughly:
+- the list: `[id^="Slider-"]`
+- the slides: `[id^="Slide-"]`
+- the buttons: `button[name="previous"]` and `button[name="next"]`
+- the counter: `.slider-counter--current` and `.slider-counter--total`
+
+Those are the labels your HTML must use for the global slider to work. 
+If they match what you see, we can convert your section to use it. 
+
+
+
+
+global.js runs on every page automatically,
+So Loading it again using script would cause a bug.
+
+If your section also included global.js, 
+the browser would try to run it a second time and 
+register every custom element twice. 
+You'd get errors like 'slider-component' has already been used with this registry, 
+and other parts of the site (menu, cart, variant picker) could misbehave.
+
+What you do need to load in your section is the slider's CSS. 
+In the reference, that's this line at the top:
+
+liquid
+{{ 'component-slider.css' | asset_url | stylesheet_tag }}
+
+The global slider's layout styles live there, and global.js doesn't include them.
+
+
+
+So if you convert your section to use the global slider, you would:
+
+Delete your <script src="...featured-slider.js..."> line
+Add the component-slider.css line
+Change your HTML labels to match what SliderComponent looks for 
+(Slider- ids, Slide- ids, previous/next button names)
+Remove your own slider CSS and JS
+
+
+
+
+
+
+{% endcomment %}
