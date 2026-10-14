@@ -1,0 +1,1998 @@
+The complete code found on featured-product.liquid
+
+
+
+<script type="application/ld+json">
+  {{ section.settings.product | structured_data }}
+</script>
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="
+    featured-product-section
+    section
+    section--full-width
+    color-{{ section.settings.color_scheme }}
+  "
+>
+  <div
+    class="section-content-wrapper spacing-style size-style border-style"
+    style="
+      {% render 'spacing-style', settings: section.settings %}
+      --media-height: 100%;
+      {% if request.visual_preview_mode %}
+        --visual-preview--height: 100%;
+      {% endif %}
+    "
+  >
+    {% capture featured_product_media %}
+      {% content_for 'block', type: '_media-without-appearance', id: 'media', closest.product: section.settings.product %}
+    {% endcapture %}
+
+    {% capture featured_product_content %}
+      {% content_for 'block', type: '_featured-product', id: 'featured-product', closest.product: section.settings.product %}
+    {% endcapture %}
+
+    {% if section.settings.layout == 'media-left' %}
+      {{ featured_product_media }}
+      {{ featured_product_content }}
+    {% else %}
+      {{ featured_product_content }}
+      {{ featured_product_media }}
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .featured-product-section .section-content-wrapper {
+    grid-template-columns: 1fr;
+    display: grid;
+    overflow: hidden;
+
+    @media (min-width: 750px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Here I should maybe set the width to auto when the ratio is set to adapt */
+  .featured-product-section .product-media-container.constrain-height {
+    /* arbitrary offset value based on average theme spacing and header height */
+    --viewport-offset: 400px;
+    --constrained-min-height: var(--visual-preview--height, 80dvh);
+
+    @media screen and (min-width: 750px) {
+      --viewport-offset: 300px;
+    }
+  }
+
+  .featured-product-section .product-grid__card {
+    --padding-block: 20px;
+    --padding-inline: 20px;
+
+    @media screen and (min-width: 750px) {
+      --padding-block: 40px;
+      --padding-inline: 40px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .featured-product-section .media-block {
+      order: -1;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.featured_product",
+  "disabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:settings.product"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:settings.media_position",
+      "options": [
+        {
+          "value": "media-left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "media-right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "media-left"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.featured_product",
+      "category": "t:categories.products",
+      "settings": {
+        "color_scheme": "scheme-3"
+      },
+      "blocks": {
+        "media": {
+          "type": "_media-without-appearance",
+          "static": true,
+          "name": "t:names.product_media"
+        },
+        "featured-product": {
+          "type": "_featured-product",
+          "static": true,
+          "name": "t:names.product",
+          "blocks": {
+            "featured-product-title": {
+              "type": "product-title",
+              "name": "t:names.title",
+              "static": true,
+              "settings": {
+                "type_preset": "h5",
+                "width": "100%"
+              }
+            },
+            "featured-product-price": {
+              "type": "_featured-product-price",
+              "name": "t:names.price",
+              "static": true
+            },
+            "featured-product-gallery": {
+              "type": "_featured-product-gallery",
+              "name": "t:names.image",
+              "static": true
+            },
+            "featured-product-swatches": {
+              "type": "swatches",
+              "name": "t:names.swatches",
+              "static": true,
+              "settings": {
+                "hide_padding": true
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+{% endschema %}
+
+
+
+
+
+
+
+You can imagine the structure like this: 
+
+    Featured Product Section
+│
+├── Background
+│
+└── Content Wrapper
+     │
+     ├── Product Media
+     │
+     └── Product Information
+
+
+
+
+
+
+
+{% comment %}
+  We are trying to create a feature section in shopify 
+that shows the product image on the left side and the content on the right side
+{% endcomment %}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+{% comment %}
+  At first glance, this looks like normal HTML.
+  But this part:
+  {{ section.settings.color_scheme }}
+    
+   section.settings is 'the settings configured for this section in the Theme Editor.
+
+   section.settings.product
+   means 'the product selected in the Theme Editor.'
+
+   section.settings.color_scheme
+   means 'the color scheme selected in the Theme Editor.'
+
+   why do we have hyphen -        section-background color-{{ section.settings.color_scheme }}
+   Suppose the merchant chooses:   scheme-1
+
+   Shopify might produce:  class="section-background color-scheme-1"
+   So in a nutshell    Liquid is dynamically constructing the CSS class.
+   as
+
+   "color-" + whatever the merchant selected
+
+
+
+
+   As you can see the div is empty... nothing is inside
+   It's probably being used as a background layer.
+   For example, CSS could say:
+
+  .section-background {
+  position: absolute;
+  inset: 0;
+}
+
+so the color class determines its background color.
+
+{% endcomment %}
+
+
+
+<div class="featured-product-section section section--full-width color-{{ section.settings.color_scheme }}">
+    {% comment %}
+     This is the main container.
+
+     There are four classes here
+
+     Also 
+     color-{{ section.settings.color_scheme }}
+     Again, dynamically applies the selected color scheme.
+
+    {% endcomment %}
+
+
+
+<div class="section-content-wrapper ...">   
+    {% comment %}
+      This is basically the container holding the actual content.
+
+    
+    {% endcomment %}
+
+
+
+
+
+
+
+ {% capture featured_product_media %}
+
+    {% comment %}
+
+    capture means:
+
+    Run the Liquid inside here and store the resulting HTML in a variable called
+    'featured_product_media'
+
+      
+    {% endcomment %}
+
+    Inside the capture... we have 
+
+    {% content_for 'block',
+    type: '_media-without-appearance',
+    id: 'media',
+    closest.product: section.settings.product
+    %}
+
+
+
+    {% comment %}
+      {% content_for 'block' %}       This tells Shopify:  "Render a block here."
+
+
+      type: '_media-without-appearance'       This tells Shopify which block type to render.
+
+      Note;;;;;;           The _ is significant in Shopify's newer theme architecture: it commonly indicates a private/internal theme block, 
+                           rather than a block intended to be independently added by merchants in the Theme Editor.
+                           So this block probably handles the product images/media.
+
+
+
+    id: 'media'                   This gives that block an ID:
+
+
+
+
+    closest.product: section.settings.product
+
+    This is saying:
+
+    "For this block, treat the product selected in this section's settings as the closest product."
+
+
+    Remember;   section.settings.product  means       The product the merchant selected in the Theme Editor.
+
+
+
+
+    {% endcomment %}
+
+
+
+
+
+
+
+    {% capture featured_product_content %}
+
+
+    {% comment %}
+      This alos mean
+      Create a variable called featured_product_content and 
+      store some generated HTML inside it.
+    {% endcomment %}
+
+    {% content_for 'block',
+  type: '_featured-product',
+  id: 'featured-product',
+  closest.product: section.settings.product
+  %}
+
+  featured_product_media     probably mean: Product images    or     Product videos    or   Media gallery 
+  
+  featured_product_content   probably mean: Product title    or     Price    or   Variant picker  or  Description or  Add to cart  etc
+
+
+
+
+
+
+  ┌─────────────────────────────────┐
+│                                 │
+│       FEATURED PRODUCT          │
+│                                 │
+│  ┌────────────┐ ┌────────────┐ │
+│  │            │ │ Product    │ │
+│  │   IMAGE    │ │ Title      │ │
+│  │            │ │ Price      │ │
+│  │            │ │ Variants   │ │
+│  │            │ │ Add Cart   │ │
+│  └────────────┘ └────────────┘ │
+│                                 │
+└─────────────────────────────────┘
+
+
+Now comes the decision
+
+{% if section.settings.layout == 'media-left' %}
+
+means:
+"If the layout setting is equal to media-left..."
+
+section.settings.layout          
+also means: 
+The layout selected in the Theme Editor.
+
+Maybe the merchant has:
+Layout:
+○ Media left
+○ Content left
+
+
+
+If it's media-left...
+so the media will be at the left and the content will be at the right
+{% else %}
+ means: "If the condition wasn't true, do this instead."
+ 
+ 
+
+ Also notice what capture does
+
+ Normally:
+ {% content_for 'block', ... %}
+would render something.
+
+
+
+But:
+{% capture something %}
+    ...generate something...
+{% endcapture %}
+
+means:  Generate it, but put the result into a variable first.
+
+
+So:
+
+{% capture featured_product_media %}
+    ...
+{% endcapture %}
+
+creates:  featured_product_media = generated HTML
+Then later:        {{ featured_product_media }}
+
+
+
+
+
+
+
+
+Why didn't they just render the blocks directly? without using Capture like the below
+
+{% if section.settings.layout == 'media-left' %}
+
+    {% content_for 'block', type: '_media-without-appearance' %}
+    {% content_for 'block', type: '_featured-product' %}
+
+{% else %}
+
+    {% content_for 'block', type: '_featured-product' %}
+    {% content_for 'block', type: '_media-without-appearance' %}
+
+{% endif %}
+
+
+They could structure it that way in some implementations.
+
+But capture allows the developer to prepare/store each piece first, then output the pieces wherever they want.
+
+That's particularly useful when the generated content is more complicated.
+
+
+
+
+
+As you can see, this file is not self-contained. It's a "section" file that just orchestrates other 
+files it doesn't include. Here's what's missing from what we have: 
+almost certainly living somewhere like /blocks/ or /snippets/ in the theme.
+
+
+1. _media-without-appearance — a separate block file that renders the actual image/gallery
+2. _featured-product — a separate block file that itself likely composes more child blocks 
+(you can see this in the schema's presets:
+     product-title, _featured-product-price, _featured-product-gallery, swatches)
+3. (product-title, _featured-product-price, _featured-product-gallery, swatches) 
+is almost certainly its own block file too
+4. Translation files
+Everything like "t:names.featured_product" and "t:settings.product" pulls 
+text from a locale JSON file (e.g. en.default.schema.json), not from this file.
+5. structured_data filter
+This is a built-in Shopify filter (not external code you need), but worth knowing it's 
+generating SEO/rich-snippet JSON-LD automatically, not something defined in this file.
+
+
+
+1. we are working on  _media-without-appearance     found in block folder
+
+{% liquid
+  assign unset_image_tag = false
+  if block.settings.image_position == 'contain'
+    assign unset_image_tag = true
+  endif
+%}
+
+{% render 'media', unset_image_tag: unset_image_tag, section_id: section.id %}
+
+{% schema %}
+{
+  "name": "t:names.media",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "media_type",
+      "label": "t:settings.type",
+      "options": [
+        {
+          "value": "image",
+          "label": "t:options.image"
+        },
+        {
+          "value": "video",
+          "label": "t:options.video"
+        }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:settings.image",
+      "visible_if": "{{ block.settings.media_type == 'image' }}"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:settings.link",
+      "visible_if": "{{ block.settings.media_type == 'image'  }}"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:settings.video",
+      "visible_if": "{{ block.settings.media_type == 'video' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "video_loop",
+      "label": "t:settings.loop",
+      "default": true,
+      "visible_if": "{{ block.settings.media_type == 'video' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "video_autoplay",
+      "label": "t:settings.autoplay",
+      "default": false,
+      "visible_if": "{{ block.settings.media_type == 'video' }}"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "t:settings.image_position",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "contain ",
+          "label": "t:options.contain"
+        }
+      ],
+      "default": "cover",
+      "visible_if": "{{ block.settings.media_type == 'image' }}"
+    },
+    {
+      "type": "select",
+      "id": "video_position",
+      "label": "t:settings.video_position",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "contain",
+          "label": "t:options.contain"
+        }
+      ],
+      "default": "cover",
+      "visible_if": "{{ block.settings.media_type == 'video' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.media"
+    }
+  ]
+}
+{% endschema %}
+
+
+Explanation
+I want you to see the overall structure first:
+
+THIS FILE
+│
+├── 1. Liquid logic
+│      └── Decide whether image should be "unset"
+│
+├── 2. Render a snippet
+│      └── Send information to the snippet
+│
+└── 3. Schema
+       └── Tell Shopify Theme Editor
+           what settings this block should have
+
+
+Why call it           unset_image_tag 
+The name is telling us what the variable is intended to control.   
+
+roughly means:
+"Should we unset/remove something about the image tag?"
+
+{% assign unset_image_tag = false %}
+means:
+Start by assuming we DON'T need to unset the image tag.
+
+{% if block.settings.image_position == 'contain' %}
+ This is asking a question:
+"Is the image position set to contain?"   
+
+Remember from your schema later, you have:
+
+{
+  "value": "cover",
+  "label": "..."
+},
+{
+  "value": "contain",
+  "label": "..."
+}
+
+So the merchant can choose:
+
+Image position
+○ Cover
+○ Contain
+
+
+If they choose contain, then:
+block.settings.image_position     equals:    contain
+Therefore:
+{% block.settings.image_position == 'contain' %}
+becomes:
+contain == contain
+
+
+
+So the logic is:
+
+START
+  ↓
+unset_image_tag = false
+  ↓
+Is image_position "contain"?
+  ↓
+YES
+  ↓
+unset_image_tag = true
+
+
+If the merchant chooses cover:
+
+START
+  ↓
+unset_image_tag = false
+  ↓
+Is image_position "contain"?
+  ↓
+NO
+  ↓
+leave it false
+
+
+
+So this:
+{% liquid
+
+  assign unset_image_tag = false
+
+  if block.settings.image_position == 'contain'
+    assign unset_image_tag = true
+  endif
+
+%}
+basically means:
+Start with unset_image_tag as false. If the image position is contain, change it to true.
+
+
+
+This is a different Liquid command.
+{% render 'media', unset_image_tag: unset_image_tag, section_id: section.id %}
+means:
+"Render the media snippet, and give that snippet these pieces of information."
+
+{% unset_image_tag: unset_image_tag %}
+This looks repetitive, but there's an important distinction.
+The left side:     is the name the snippet will receive.
+The right side:    is the variable from this current file.
+So:
+{% unset_image_tag: unset_image_tag %}
+means:
+"Inside the media snippet, create/use a variable called unset_image_tag, 
+and give it the value of my current unset_image_tag variable."
+
+For example, if:
+{% current unset_image_tag = true %}
+
+then the snippet receives:
+media snippet
+    ↓
+unset_image_tag = true
+
+
+{% section_id: section.id %}
+means:
+"Give the media snippet the current section's ID and call that value section_id."
+
+If the current section's ID were:
+template--123456
+the snippet gets:
+section_id = template--123456
+
+Whenever you see:
+{% render 'something', name: value %}
+read it as:
+Render something and pass it name = value.
+
+For example:
+{% render 'product-card', product: product %}
+means:
+product-card snippet
+       ↓
+product = current product
+
+
+
+Now we reach {% schema %}
+it tells Shopify:
+"Here is how this block should appear and behave in the Theme Editor."
+
+{
+  "name": "t:names.media",
+  "tag": null,
+  "settings": [...]
+}
+
+"name": "t:names.media"
+This tells Shopify the name of the block.
+But You might see something like: Media         in the Theme Editor.
+t:names.media       is a translation key.
+
+Instead of hardcoding:
+{
+  "name": "Media",
+}
+the theme can reference a translation instead.
+
+"tag": null
+This is saying the block doesn't request a specific HTML wrapper tag through this schema setting.
+
+some Shopify sections can specify:
+{
+  "tag": "section"
+}
+which can influence the wrapper.
+In our case:  Null means                 No specific tag is defined here.
+
+
+{
+  "settings": [...]
+}
+This means:
+"Here are all the controls the merchant gets in the Theme Editor."
+Everything inside this array becomes a setting.
+You have:
+
+media_type
+image
+link
+video
+video_loop
+video_autoplay
+image_position
+video_position
+
+
+
+
+
+First setting: media type
+{
+  "type": "select",
+  "id": "media_type",
+  "label": "t:settings.type",
+}
+
+type       select              creates a dropdown/select control.
+
+id      media_type             This is the internal name of the setting.
+Therefore Liquid can access it using: 
+block.settings.media_type   
+
+
+
+The options
+"options": [
+  {
+    "value": "image",
+    "label": "t:options.image"
+  },
+  {
+    "value": "video",
+    "label": "t:options.video"
+  }
+]
+
+The merchant gets two choices:
+Image
+Video
+
+
+label                          What the merchant sees.
+
+
+value                          What Liquid receives.
+
+So:
+Theme Editor
+     ↓
+Merchant chooses "Image"
+     ↓
+Liquid value = "image"
+
+
+Then:
+block.settings.media_type
+
+returns:
+image
+
+
+
+
+Now the image setting
+{
+  "type": "image_picker",
+  "id": "image",
+  "label": "t:settings.image",
+}
+This creates Shopify's image picker.
+
+The merchant can choose an image from Shopify.
+
+Its internal ID is:           image
+Therefore Liquid can access it with:          block.settings.image
+
+
+
+
+
+Now we have:
+"visible_if": "{{ block.settings.media_type == 'image' }}"
+This is a very useful Shopify feature.
+It says:
+Only show this setting when the media type is image.
+
+
+
+
+
+Without visible_if, the merchant might see:
+
+Media type
+[ Video ▼ ]
+
+Image
+[ Choose image ]
+
+Link
+[ URL ]
+
+Video
+[ Choose video ]
+
+Loop
+☑
+
+Autoplay
+☐
+
+That's confusing.
+
+
+
+With visible_if:
+
+If Image:
+
+Media type
+[ Image ▼ ]
+
+Image
+[ Choose image ]
+
+Link
+[ URL ]
+
+Image position
+[ Cover ▼ ]
+
+
+
+
+If Video:
+
+Media type
+[ Video ▼ ]
+
+Video
+[ Choose video ]
+
+Loop
+☑
+
+Autoplay
+☐
+
+Video position
+[ Cover ▼ ]
+
+Much cleaner.
+
+
+
+
+The link setting
+{
+  "type": "url",
+  "id": "link",
+  "label": "t:settings.link",
+  "visible_if": "{{ block.settings.media_type == 'image' }}"
+}
+This gives the merchant a URL field.
+
+Liquid can access it as:
+{ block.settings.link }
+And it only appears when:
+media_type = image
+
+This makes sense because this particular setting is apparently intended to make the image clickable.
+
+
+
+
+Video setting
+{
+  "type": "video",
+  "id": "video",
+}
+This gives the merchant a Shopify video picker.
+And:
+"visible_if": "{{ block.settings.media_type == 'video' }}"
+means:
+Only show the video picker when the merchant has chosen Video.
+
+
+
+
+Video loop
+{
+  "type": "checkbox",
+  "id": "video_loop",
+  "label": "t:settings.loop",
+  "default": true,
+}
+The setting is called:
+video_loop
+
+So Liquid can access:
+block.settings.video_loop
+
+"default": true
+means:                          The checkbox starts turned ON.
+
+
+
+Video autoplay
+Same idea:
+{
+  "type": "checkbox",
+  "id": "video_autoplay",
+}
+So Liquid can access:
+block.settings.video_autoplay
+
+"default": false
+
+means:                           The video does NOT autoplay by default.
+
+
+
+
+
+Now image_position
+{
+  "type": "select",
+  "id": "image_position",
+}
+Another dropdown.
+
+The merchant chooses between:
+Cover
+Contain
+
+Cover   means:                  The image fills the container.
+                                But parts of the image may get cropped.
+                                Lke in CSS          object-fit: cover;
+
+
+
+Contain   means:                The entire image remains visible:
+                                potentially leaving space.
+                                Lke in CSS          object-fit: contain;
+
+
+
+
+ 
+                                
+
+Finally: presets
+"presets": [
+  {
+    "name": "t:names.media"
+  }
+]
+A preset is essentially a starting configuration for the block
+when it is added through the editor.
+
+It tells Shopify:
+
+"This block has a default/preset configuration called Media."                                
+
+
+
+
+Then we close the schema
+{% endschema %}
+This tells Shopify:
+"The schema configuration ends here."
+
+Now let's connect EVERYTHING
+You have a setting in the schema:
+"id": "image_position"                    This then creates:                         block.settings.image_position
+Then your Liquid asks:                               if block.settings.image_position == 'contain'
+
+That's the connection between schema and Liquid.
+
+
+
+
+
+
+
+
+
+
+
+
+2. _featured-product
+
+
+
+{% capture product_card_children %}
+  <div class="featured-product-content-top">
+    {% content_for 'block', type: 'product-title', id: 'featured-product-title' %}
+
+    {% content_for 'block', type: '_featured-product-price', id: 'featured-product-price' %}
+  </div>
+  {% content_for 'block', type: '_featured-product-gallery', id: 'featured-product-gallery' %}
+  <div class="featured-product-content-bottom">
+    {%- content_for 'block', type: 'swatches', id: 'featured-product-swatches' -%}
+  </div>
+{% endcapture %}
+
+{% render 'product-card', children: product_card_children, product: closest.product, product_card_gap: 8 %}
+
+{% stylesheet %}
+  .featured-product-content-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--gap-sm);
+  }
+
+  .featured-product-content-bottom:not(:has(product-swatches)) {
+    display: none;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.product",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:content.resource_reference_product_card"
+    }
+  ]
+}
+{% endschema %}
+
+
+
+Explanation
+The variable is:                     product_card_children
+The first <div>                        It creates a container for the top part of the product card.
+Inside it we have:    
+
+featured-product-content-top
+│
+├── Product title
+└── Product price
+
+
+{% content_for 'block', type: 'product-title', id: 'featured-product-title' %}
+means:                        "Render the product-title block here."
+content_for 'block',                   means:      "I want to render a block.".
+type: 'product-title'          means:       The type of block I want is product-title
+id: 'featured-product-title'   means:       gives this particular block instance an identifier.
+
+
+{% content_for 'block', type: '_featured-product-price', id: 'featured-product-price' %}
+means:                        "Render the   _featured-product-price block     here.."
+_featured-product-price       and          product-title         are simply different block types.
+
+The underscore is part of the block's type/name.
+It's basically part of the identifier:                    _featured-product-price
+
+
+
+Then another <div>                                 <div class="featured-product-content-bottom">
+{%- content_for 'block', type: 'swatches', id: 'featured-product-swatches' -%}
+This renders the swatches or product variant choices.
+
+● Black   ● White   ● Blue
+
+
+
+So Shopify has now created:         product_card_children
+containing all this:
+
+<div class="featured-product-content-top">
+    product title
+    product price
+</div>
+
+product gallery
+
+<div class="featured-product-content-bottom">
+    swatches
+</div>
+
+
+
+
+Now the important part: render
+{% render 'product-card',
+  children: product_card_children,
+  product: closest.product,
+  product_card_gap: 8
+%}
+We're saying:
+"Render the product-card snippet, and give it these three things."
+
+Now the confusing part:              children: product_card_children
+
+children : product_card_children
+   ↑              ↑
+ receiver       value
+
+ The left side:     children                                 is the name the product-card snippet will use
+ The right side:    product_card_children                    is the variable we created earlier.
+
+
+ children: product_card_children
+ means:
+ "Take the HTML stored inside product_card_children and 
+ give it to the snippet under the name children."
+
+
+ To say it in plain English, 
+ you are telling Shopify: "Go look at my product_card_children variable, 
+ grab everything inside it, 
+ rename it to children, and send it over to the product card snippet."
+
+
+
+
+
+product: closest.product
+means:
+"Give the product-card snippet the current/closest product,
+and inside that snippet call it product."
+
+OR
+Go look inside my variable closest, 
+grab the product data out of it, and give it the nickname product (Left side). 
+So inside the snippet, if I say {{ product }}, 
+it will show the product details from closest.product (like the title or price).
+
+
+
+
+
+Then        product_card_gap: 8
+means:
+Create a brand new number setting called product_card_gap and set its value exactly to 8. 
+So inside the snippet, if I say {{ product_card_gap }}, 
+it will output the number 8 (which the code will use to make an 8-pixel spacing gap)."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3..  this was supposed to be done before the number two
+
+
+
+{% liquid
+  assign product = closest.product
+-%}
+
+{% capture children %}
+  {% content_for 'blocks', closest.product: product %}
+{% endcapture %}
+
+{% render 'product-card', children: children, product: product %}
+
+{% schema %}
+{
+  "name": "t:names.product_card",
+  "blocks": [
+    {
+      "type": "_product-card-group"
+    },
+    {
+      "type": "text"
+    },
+    {
+      "type": "image"
+    },
+    {
+      "type": "buy-buttons"
+    },
+    {
+      "type": "price"
+    },
+    {
+      "type": "review"
+    },
+    {
+      "type": "swatches"
+    },
+    {
+      "type": "_product-card-gallery"
+    },
+    {
+      "type": "product-title"
+    },
+    {
+      "type": "custom-liquid"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:content.resource_reference_product_card"
+    },
+    {
+      "type": "range",
+      "id": "product_card_gap",
+      "label": "t:settings.vertical_gap",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.borders"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.thickness",
+      "default": 1,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings.opacity",
+      "default": 100,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ]
+}
+{% endschema %}
+
+
+
+
+The key relationship is:
+
+THIS CODE
+product-card
+    │
+    ├── allows blocks
+    │
+    ├── text
+    ├── image
+    ├── price
+    ├── swatches
+    ├── product-title
+    ├── gallery
+    └── _product-card-group
+
+
+
+The most important thing you just revealed:
+
+{% liquid
+  assign product = closest.product
+-%}
+
+{% capture children %}
+  {% content_for 'blocks', closest.product: product %}
+{% endcapture %}
+
+{% render 'product-card', children: children, product: product %}
+
+
+Imagine you have a big plastic storage box in your room, and 
+you wrote the word closest on the outside of the box with a marker.
+Inside this box, you have stuffed a bunch of different things: a toy car, a map, and a product 
+(let's say it's a cool superhero toy).If you just tell your computer: 
+"Hey, go find the product!" The computer will look around the room, get confused, and say, 
+"Which product? The room is messy! I don't see it!"But if you say closest.product, 
+you are telling the computer exactly where to look:"Go to the box labeled closest...""...reach inside, 
+and grab the product that is hidden in there."Why can't we just say product = product?If you tell your friend, 
+"Give me the toy using the toy," your friend will think you are being silly! 
+The computer thinks the same way. It needs you to tell it where to get the toy from. 
+Saying product = closest.product is just your way of saying: 
+"Take the toy out of the closest box, and hand it to me."
+
+
+assign product = closest.product
+This says:
+"Take the product that Shopify considers the closest product, 
+and store it in a variable called product
+
+So: product          and         closest.product
+refer to the same product.
+
+{% capture children %}
+
+  {% content_for 'blocks', closest.product: product %}
+
+{% endcapture %}
+
+
+
+
+{% content_for 'blocks', product: closest.product %}
+Go to the box labeled closest, grab the product toy inside it, and hand it to the blocks section 
+under the nickname product
+
+
+If you pass it     closest.product without a label,
+It would get totally confused because it is expecting a strict "Name : Value" pair. 
+The computer always needs to know: What is the setting called and What data goes inside it?
+
+
+
+{% content_for 'blocks', closest.product: product %}     
+This allows a user to add any kind of block on the theme editor     
+and for that block that has closest.product, the  value product should be passed into it
+
+
+
+
+
+
+
+
+The new product-card code is the Lego box.
+
+Its schema says:
+
+You are allowed to use:
+
+✓ Text
+✓ Image
+✓ Price
+✓ Review
+✓ Swatches
+✓ Gallery
+✓ Product title
+✓ Buy buttons
+✓ Custom Liquid
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+HOW TO USE RENDER
+{% render 'SNIPPET NAME', DATA TO GIVE THE SNIPPET %}
+What changes is which snippet you are calling and what information you are handing to it.
+
+{% render 'product-card' %}
+means:                                       Go to snippets/product-card.liquid and run it.
+
+
+The basic structure
+{% render 'snippet-name', information: value %}
+
+{% render 'snippet-name', settings: block.settings %}
+means: 
+Render this 'snippet-name'
+ and Give that snippet some information called settings and should contain block.settings
+
+
+ Now look at:
+ {% render 'spacing-style', settings: section.settings %}
+ You're saying:
+Go to snippets/spacing-style.liquid.
+And:
+Give it section.settings.
+But call that information settings inside the snippet.
+
+So initially this is how the spacing-style snippet look like
+settings.padding_top
+settings.padding_bottom
+
+
+
+When you use that render it passes the value into it to be
+section.settings.padding_top
+section.settings.padding_bottom
+
+
+
+
+
+
+the whole idea is 
+
+{% render 'product-card',
+  children: product_card_children,
+  product: closest.product,
+  product_card_gap: 8
+%}             the whole idea is 
+
+When you render the `product-card` snippet:
+
+```liquid
+{% render 'product-card',
+  children: product_card_children,
+  product: closest.product,
+  product_card_gap: 8
+%}
+```
+
+Shopify opens the `product-card` snippet and **passes these values into it**.
+
+So, inside the `product-card` code:
+
+* Anywhere it uses `children` → Shopify **passes the value of** `product_card_children`
+* Anywhere it uses `product` → Shopify **passes the value of** `closest.product`
+* Anywhere it uses `product_card_gap` → Shopify **passes the value** `8`
+
+In simple terms:
+
+**`children` → gets the value from `product_card_children`**
+
+**`product` → gets the value from `closest.product`**
+
+**`product_card_gap` → gets the value `8`**
+
+So you can think of it as:
+
+ **“Replace the variable with the value I passed to it.”**
+
+But remember: Shopify is not literally changing the original snippet code. 
+It is **passing those values into the snippet**, so the snippet can use them.
+
+
+
+
+
+
+
+
+
+
+If you are the developer and you want to create an image block 
+where the merchant can choose something like Image position in the Theme Editor, 
+you start from the schema, not from block.settings.image_position.
+
+Think of the process in this order:
+
+1. First, decide what setting you want
+
+You say:
+
+“I want the merchant to be able to choose whether the image is on the left or right.”
+
+So you create a setting in the block schema:
+
+{
+  "type": "select",
+  "id": "image_position",
+  "label": "Image position",
+  "options": [
+    {
+      "value": "left",
+      "label": "Left"
+    },
+    {
+      "value": "right",
+      "label": "Right"
+    }
+  ],
+  "default": "left"
+}
+
+The important part is:
+"id": "image_position"
+This creates the setting and gives it the name image_position.
+
+
+
+2. Then you write the HTML/Liquid for the image
+
+For example:
+<div class="image-block">
+  {{ block.settings.image | image_url: width: 1000 | image_tag }}
+</div>
+
+You could also have an image setting:
+{
+  "type": "image_picker",
+  "id": "image",
+  "label": "Image"
+}
+Now the merchant can choose the actual image in the Theme Editor.
+
+
+3. Then you use block.settings.image_position
+This is where the setting you created gets used:
+<div class="image-block image-block--{{ block.settings.image_position }}">
+ If the merchant selects:
+
+Image position → Right
+
+then:
+block.settings.image_position
+gives you:
+right
+
+So your HTML effectively becomes: 
+<div class="image-block image-block--right">
+Then CSS can control what image-block--right does.  
+
+
+
+
+How to Explain This to Your Students:
+"When you are in the Theme Editor Shopify Help Center, 
+the settings are the things you immediately see when you click on a particular block Shopify Help Center 
+(like an image block). The settings panel is filled with all the different buttons, dials, and menus 
+you can interact with.To make the computer understand what you are doing in the editor, we use code. 
+Let's break down what the code is actually looking at:
+block.settings.image means: 
+'Go look at the settings panel for this block, find the image upload button, 
+and pull out the exact photo that the person clicked on and selected.
+'block.settings.image_position means: 
+'Go look at that same settings panel, find the specific setting with the left-or-right toggle switch, 
+and see which side the merchant chose.
+'So, the code is just reaching into the settings 
+panel to grab the exact photos you picked and the exact buttons you pushed!"
+
+
+
+
+
+
+
+
+
+
+
+When you are in the Theme Editor, 
+the schema is what creates the settings you see when you click a block.
+
+Let's say we want an image block where the merchant can:
+
+1. Choose an image.
+2. Choose whether the image is on the left or right.
+
+So the developer creates these two settings:
+
+{
+  "type": "image_picker",
+  "id": "image",
+  "label": "Image"
+}
+
+and 
+
+
+{
+  "type": "select",
+  "id": "image_position",
+  "label": "Image position",
+  "options": [
+    {
+      "value": "left",
+      "label": "Left"
+    },
+    {
+      "value": "right",
+      "label": "Right"
+    }
+  ]
+}
+
+What is happening here?
+The first one:
+
+"id": "image"
+It creates an Image setting in the Theme Editor.
+
+The second one:
+"id": "image_position"
+It creates an Image position setting.
+
+They don't need to have the same ID.
+They are simply two different settings in the same block.
+So the merchant sees something like:
+
+Image
+[ Choose image ]
+
+Image position
+[ Left ▼ ]
+
+
+Now look at this:
+block.settings.image
+
+It means:
+"Go look at the settings for this block, find the setting whose ID is image, 
+and give me whatever image the merchant selected."
+
+
+If the merchant selects an image
+block.settings.image
+give whatever image value the merchant selected, 
+which you can then turn into a URL or <img> tag.
+
+For example:
+{{ block.settings.image | image_url: width: 1000 | image_tag }}
+So mentally:
+Merchant selects → 🖼️ photo.jpg
+
+block.settings.image
+          ↓
+     selected image
+          ↓
+     image_url
+          ↓
+https://cdn.shopify.com/...
+
+
+
+
+
+
+
+And:
+
+block.settings.image_position
+means:
+"Go look at the settings for this block, find the setting whose ID is image_position, 
+and tell me which option the merchant selected."
+
+
+If the merchant chose Right, then:
+
+block.settings.image_position
+gives:
+right
+
+
+So where did this come from?
+<div class="image-block image-block--{{ block.settings.image_position }}">
+
+The developer wrote this themselves.
+They are taking the merchant's choice:
+{{ block.settings.image_position }}
+and putting it inside a class.
+
+If the merchant chose Right, it becomes:
+<div class="image-block image-block--right">
+
+ The developer can then write CSS for:
+.image-block--right
+
+to control where the image appears.
+
+
+So the easiest rule to remember is:
+Schema creates the setting. block.settings.ID goes back to that setting and 
+gets the value the merchant chose.
+
+
+
+
+
+
+
+block.shopify_attributes helps Shopify identify that 
+individual block in the Theme Editor.
+
+
+1. When do I use section.settings?
+Use section.settings when the setting affects the entire section.
+For example, imagine you have a hero section:
+
+You might want the merchant to control:
+image/text position
+section background color
+section height
+overall spacing
+content alignment
+
+Those are things that affect the whole section.
+
+
+
+
+2. When do I use a block?
+Use a block when you want the merchant to be able to say:
+
+"I want another one of these."
+
+The easiest way to decide
+Ask yourself:
+
+Question 1:
+Can the merchant add another one of these?
+If yes → Block
+
+for example:
+Heading
+Text
+Button 
+
+oR
+
+Image
+Image
+Image
+
+
+
+Question 2:
+Does this setting control the whole section?
+If yes → section.settings
+
+Examples:
+Background color
+Section width
+Image position
+Section spacing
+Desktop/mobile layout
+
+
+
+So what is block.shopify_attributes?
+This one sounds more complicated than it really is.
+
+You had:
+<div class="text-block" {{ block.shopify_attributes }}>
+
+
+
+
+
+
+
+  {{ 'component-card.css' | asset_url | stylesheet_tag }}
+  Where it goes
+  Right at the top of featured-collection.liquid section, 
+  before any HTML markup, exactly like your reference file does it:
+
+  you're not writing new CSS — you're just telling the browser 
+  "also load this stylesheet that's sitting in my theme's assets/ folder
+
+  So this it how it is structured in a liquid file below
+
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-rating.css' | asset_url | stylesheet_tag }}
+
+{% if section.settings.image_shape == 'blob' %}
+  {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
+{% endif %}
+
+{%- style -%}
+  .featured-collection-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    ...
+  }
+{%- endstyle -%}
+
+<div class="featured-collection ...">
+  ...
+
+
+
+Order doesn't matter much for correctness, but convention in Dawn is: 
+stylesheet tags first, 
+then your section's own {% style %} block, 
+then the HTML.
+
+
+Do you need to check if the file exists first?
+No — you don't create these files yourself. 
+They already ship with the Dawn theme in assets/
+
+
+It's the standard Dawn pattern — 
+nearly every section that renders 
+card-product (featured-collection, main-collection-product-grid, related-products, etc.) 
+repeats these same 2–4 stylesheet tags at the top. 
+That repetition is intentional and by design, not a mistake to dedupe.
+
+
+
+Also
+If you truly want to centralize it, 
+you could move shared tags into theme.liquid's <head> 
+so they load globally on every page regardless of which sections are present — 
+but that's a stylistic choice/tradeoff 
+(loads CSS on pages that might not need it, in exchange for never forgetting a tag in a section). 
+The per-section approach you're copying from Dawn is the safer, 
+more maintainable default — stick with it.
+
+
+
+
+
+
+
